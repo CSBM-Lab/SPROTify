@@ -9,11 +9,10 @@ lightgbm==4.5.0
 optuna==4.0.0
 pandas==2.2.3
 peptides==0.3.4
-python-apt==2.4.0+ubuntu4
 python-dateutil==2.9.0.post0
-python-debian==0.1.43+ubuntu1.1
 python-magic==0.4.24
 python-version==0.0.2
 scikit-learn==1.7.2
+torch==2.9.0
 xgboost==3.0.5
 
