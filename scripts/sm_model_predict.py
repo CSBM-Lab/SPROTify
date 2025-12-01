@@ -100,7 +100,7 @@ if __name__ == '__main__':
         ),
         formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument('--model-type', type=str, choices=['xgb', 'lgbm', 'ada', 'rf', 'et'], required=True, metavar='TYPE', help='Model type to use (choices: xgb, lgbm, ada, rf or et)')
+    parser.add_argument('--model-type', type=str, choices=['xgb', 'lgbm', 'ada', 'rf', 'et'], default='lgbm', metavar='TYPE', help='Model type to use (choices: xgb, lgbm, ada, rf or et)')
     parser.add_argument('--model-path', type=str, default='', metavar='FILE', help='Path to trained model file (optional; auto-select by model type if empty)')
     parser.add_argument('--input', type=str, required=True, metavar='FILE', help='Path to the input FASTA file')
     parser.add_argument('--output', type=str, required=True, metavar='FILE', help='Path to the output CSV file')
