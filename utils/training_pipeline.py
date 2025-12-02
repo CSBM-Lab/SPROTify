@@ -64,7 +64,7 @@ def parse_and_validate_args():
     # Arguments shared by both modes
     parser.add_argument('--tune', action='store_true', help='Enable Optuna hyperparameter tuning (optional)')
     parser.add_argument('--n_trials', type=int, default=300, metavar='N', help='Number of Optuna optimization trials (used when --tune is enabled)')
-    parser.add_argument('--run_baseline', action='store_true', help='Run LazyPredict baseline models')
+    parser.add_argument('--run_baseline', action='store_true', help='Run baseline model comparison using LazyPredict')
     parser.add_argument("--n_jobs", type=int, default=1, metavar='NUM_CORES',
                     help="Number of CPU cores to use (use -1 for all cores)")
 
