@@ -112,11 +112,11 @@ if __name__ == '__main__':
     n_jobs = check_n_jobs(args.n_jobs)
 
     default_models = {
-        'xgb': get_file_path('pretrained_models/xgboost_model.joblib'),
-        'lgbm': get_file_path('pretrained_models/lightgbm_model.joblib'),
-        'ada': get_file_path('pretrained_models/adaboost_model.joblib'),
-        'rf': get_file_path('pretrained_models/randomforest_model.joblib'),
-        'et': get_file_path('pretrained_models/extratrees_model.joblib'),
+        'xgb': get_file_path('models/xgboost_model.joblib'),
+        'lgbm': get_file_path('models/lightgbm_model.joblib'),
+        'ada': get_file_path('models/adaboost_model.joblib'),
+        'rf': get_file_path('models/randomforest_model.joblib'),
+        'et': get_file_path('models/extratrees_model.joblib'),
     }
 
     if not args.model_path:
