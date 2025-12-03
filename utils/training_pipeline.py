@@ -9,6 +9,7 @@ from sequence_io import get_file_path, project_root
 from datetime import datetime
 from training_utils import train_and_evaluate_models, save_results_report
 from tuning import run_optuna
+from multiprocessing import cpu_count
 
 
 def parse_and_validate_args():
@@ -342,7 +343,9 @@ def run_training_pipeline(
         print('Baseline done.\n')
 
         if not args.tune:
-            print('Baseline only mode: skipping model training.')
+            if args.save_model:
+                print("[Warning] Baseline mode does not save models. --save_model will be ignored.\n")
+            print('Baseline only mode: evaluation completed. Skipping hyperparameter tuning and final model training.')
             return baseline_df
 
     # ----- Step 3: Hyperparameter Tuning (Optuna) -----
