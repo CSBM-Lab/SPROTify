@@ -174,13 +174,13 @@ python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv 
 If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 When `--tune` is used, the script will output txt files containing the evaluation metrics of the tuned model and the best hyperparameters found.
 
-For example, running train_xgboost.py will produce:
-- **Evaluation metrics**: `results_tuned/XGBClassifier_evaluation.txt`
-- **Best hyperparameters**: `best_score/XGBClassifier_optuna.txt`
-
 ```bash
 python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
 ```
+
+For the above command, the following files will be generated.
+- **Evaluation metrics**: `results_tuned/XGBClassifier_evaluation.txt`
+- **Best hyperparameters**: `best_score/XGBClassifier_optuna.txt`
 
 SPROTify also provides an fucntion (`--run-baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
 This command will generate txt files containing the accuracy of each machine learning method.
@@ -248,8 +248,9 @@ python scripts/train_adaboost.py --mode manual \
   --save-model
 ```
 
-If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
-When --tune is used in Manual mode, the output files and folder structure are the same as in auto mode.
+If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. 
+However, please note that this will significantly increase the runtime.
+When --tune is used in Manual mode, the output files and folder structure are the same as in **auto mode**.
 
 ```bash
 python scripts/train_xgboost.py --mode manual \
@@ -258,9 +259,11 @@ python scripts/train_xgboost.py --mode manual \
   --tune --n-trials 100 --save-model --n-jobs -1
 ```
 
-Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by [LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode. 
+Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by 
+[LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode. 
 Please note that these results are intended only for preliminary comparison of different algorithms, 
 have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
+the output files and folder structure are the same as in **auto mode**.
 
 ```bash
 # Preliminary evaluation only, no model will be built
