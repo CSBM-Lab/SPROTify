@@ -1,4 +1,6 @@
-![SPROTify](images/logo_mod.png =600x)
+<div align="center">
+<img src="images/logo_mod.png" style="zoom:70%"  />
+</div>
 
 # SPROTify
 
