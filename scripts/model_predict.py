@@ -119,9 +119,15 @@ if __name__ == '__main__':
         'et': get_file_path('models/extratrees_model.joblib'),
     }
 
-    if not args.model_path:
+
+    if args.model_path:
+        if args.model_type:
+            print('[Warning] Both --model-type and --model-path were provided. '
+                'Using the specified --model-path.')
+    else:
         default_path = default_models.get(args.model_type)
         args.model_path = get_file_path(default_path)
+
 
     if not os.path.isfile(args.input):
         sys.exit(f'[Error] Input file not found: {os.path.abspath(args.input)}')
