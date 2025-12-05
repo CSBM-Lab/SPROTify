@@ -1,9 +1,6 @@
-<table>
-<tr>
-  <td>
-    <img src="images/logo_mod.png" alt="SPROTify" width="200"/>
-  </td>
-  <td>
+<div style="display: flex; align-items: flex-start;">
+  <img src="images/logo_mod.png" alt="SPROTify" width="200" style="margin-right: 15px;"/>
+  <div style="margin: 0;">
     SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information.
     Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression.
     However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
@@ -13,9 +10,8 @@
     ExtraTreesClassifier, and SVC—allowing users to select the most suitable model based on their analytical goals.
     By enabling accurate identification of small proteins,
     SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
-  </td>
-</tr>
-</table>
+  </div>
+</div>
 
 SPROTify includes two main modules:
 
