@@ -38,7 +38,7 @@ def parse_and_validate_args():
     # Arguments for auto mode
     parser.add_argument('--input', type=str, metavar='FILE', help='Path to the input FASTA file (used in auto mode)')
     parser.add_argument(
-        '--label_csv', type=str,
+        '--label-csv', type=str,
         metavar='FILE',
         help=(
             'Label CSV file (used in auto mode)\n'
@@ -48,7 +48,7 @@ def parse_and_validate_args():
         )
     )
     parser.add_argument(
-        '--test_ratio', type=float, default=0.2,
+        '--test-ratio', type=float, default=0.2,
         metavar='RATIO',
         help=(
             'Proportion of data used for testing in auto mode (0–1)\n'
@@ -57,19 +57,19 @@ def parse_and_validate_args():
     )
     
     # Arguments for manual mode
-    parser.add_argument('--train_fasta', type=str, metavar='FILE', help='Path to the training FASTA file (used in manual mode)')
-    parser.add_argument('--train_label_csv', type=str, metavar='FILE', help='Path to the training label CSV file (used in manual mode)')
-    parser.add_argument('--test_fasta', type=str, metavar='FILE', help='Path to the testing FASTA file (used in manual mode)')
-    parser.add_argument('--test_label_csv', type=str, metavar='FILE', help='Path to the testing label CSV (used in manual mode)')
+    parser.add_argument('--train-fasta', type=str, metavar='FILE', help='Path to the training FASTA file (used in manual mode)')
+    parser.add_argument('--train-label-csv', type=str, metavar='FILE', help='Path to the training label CSV file (used in manual mode)')
+    parser.add_argument('--test-fasta', type=str, metavar='FILE', help='Path to the testing FASTA file (used in manual mode)')
+    parser.add_argument('--test-label-csv', type=str, metavar='FILE', help='Path to the testing label CSV (used in manual mode)')
     
     # Arguments shared by both modes
     parser.add_argument('--tune', action='store_true', help='Enable Optuna hyperparameter tuning (optional)')
-    parser.add_argument('--n_trials', type=int, default=300, metavar='N', help='Number of Optuna optimization trials (used when --tune is enabled)')
-    parser.add_argument('--run_baseline', action='store_true', help='Run baseline model comparison using LazyPredict')
-    parser.add_argument("--n_jobs", type=int, default=1, metavar='NUM_CORES',
+    parser.add_argument('--n-trials', type=int, default=300, metavar='N', help='Number of Optuna optimization trials (used when --tune is enabled)')
+    parser.add_argument('--run-baseline', action='store_true', help='Run baseline model comparison using LazyPredict')
+    parser.add_argument("--n-jobs", type=int, default=1, metavar='NUM_CORES',
                     help="Number of CPU cores to use (use -1 for all cores)")
 
-    parser.add_argument('--save_model', action='store_true',
+    parser.add_argument('--save-model', action='store_true',
                     help='Save the trained model (only saves tuned model if --tune is enabled)')
     
     args = parser.parse_args()
@@ -77,10 +77,10 @@ def parse_and_validate_args():
     # Validate input arguments
     if args.mode == 'auto':
         if not args.input or not args.label_csv:
-            parser.error('--mode auto requires both --input and --label_csv')
+            parser.error('--mode auto requires both --input and --label-csv')
     elif args.mode == 'manual':
         if not all([args.train_fasta, args.train_label_csv, args.test_fasta, args.test_label_csv]):
-            parser.error('--mode manual requires --train_fasta, --train_label_csv, --test_fasta, and --test_label_csv')
+            parser.error('--mode manual requires --train-fasta, --train-label_csv, --test-fasta, and --test-label-csv')
 
     # Verify that required files exist
     if args.mode == 'auto':

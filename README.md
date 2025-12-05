@@ -67,7 +67,7 @@ Users can either provide separate FASTA and CSV files for the training and test 
 This module is for the prediction based on constructed models. Execution requires only a single step.
 
 ```bash
-python script/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
+python scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 ```
 
 **Required arguments**
@@ -79,7 +79,7 @@ python script/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 
 - `--model-type`: Model type (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
 - `--model-path`: Path to trained model file
-- `--n_jobs`: Number of parallel jobs (default: 1, use -1 for all)
+- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -88,23 +88,23 @@ If `--model-type` and `--model-path` both are assigned, only `--model-path` will
 Perform prediction using default lightgbm model. The example files used below are stored in the **dataset** directory.
 
 ```bash
-python script/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
+python scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
 ```
 
 If users want to use other model, just need to specify `--model-type`.
 
 ```bash
 # Using xgboost model
-python script/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv
+python scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv
 # Using adaboost model  
-python script/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
+python scripts/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
 ```
 
-SPROTify also supports multi-threaded execution; the number of threads can be specified using `--n_jobs`, where `-1` indicates that all available CPU threads will be used.
+SPROTify also supports multi-threaded execution; the number of threads can be specified using `--n-jobs`, where `-1` indicates that all available CPU threads will be used.
 
 ```bash
 # Use all threads for faster prediction
-python script/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv --n_jobs -1
+python scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv --n-jobs -1
 ```
 
 ### Training and evaluation (train a model with user data)
@@ -113,11 +113,11 @@ If users wish to customize their own prediction models with their own datasets, 
 
 Depending on the machine learning algorithm selected, SPROTify provides different scripts for users. The paths to each program are listed below:
 
-- `script/train_lightgbm.py` (recommended, fastest and also precise)
-- `script/train_xgboost.py`
-- `script/train_adaboost.py`
-- `script/train_randomforest.py`
-- `script/train_extratrees.py`
+- `scripts/train_lightgbm.py` (recommended, fastest and also precise)
+- `scripts/train_xgboost.py`
+- `scripts/train_adaboost.py`
+- `scripts/train_randomforest.py`
+- `scripts/train_extratrees.py`
 
 Additionally, depending on whether the training and test sets are provided separately or a single dataset is supplied for SPROTify to randomly split, two modes (**auto mode** and **manual mode**) are available.
 
@@ -125,22 +125,22 @@ Additionally, depending on whether the training and test sets are provided separ
 Automatically splits your data into training and test sets. Training and model building can also be done in a single step.
 
 ```bash
-python script/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
+python scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
 ```
 
 **Required arguments**
 
 - `--input`: Path to the input FASTA file
-- `--label_csv`: Path to the label CSV file with columns `id` and `label`
+- `--label-csv`: Path to the label CSV file with columns `id` and `label`
 
 **Additional arguments**
 
-- `--test_ratio`: Proportion of data for testing (default: 0.2)
+- `--test-ratio`: Proportion of data for testing (default: 0.2)
 - `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna)
-- `--n_trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
-- `--run_baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning
-- `--save_model`: Save the trained model for later prediction
-- `--n_jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
+- `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
+- `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning
+- `--save-model`: Save the trained model for later prediction
+- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 - `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
 
 **Example**
@@ -152,39 +152,39 @@ Since `--mode` defaults to `auto`, the `--mode auto` is omitted in the commands 
 The example files used below are stored in the **dataset** directory.
 
 ```bash
-python script/train_lightgbm.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --save_model
+python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
-python script/train_xgboost.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --save_model
+python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
 
 # Using adaboost model
-python script/train_adaboost.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --save_model
+python scripts/train_adaboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
-By default, 80% of the dataset is used for training and 20% for testing. Users can modify this ratio using the `--test_ratio`.
+By default, 80% of the dataset is used for training and 20% for testing. Users can modify this ratio using the `--test-ratio`.
 
 ```bash
 # Custom training/test set split (90/10)
-python script/train_lightgbm.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --test_ratio 0.1 --save_model
+python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
 ```
 
-If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n_jobs` and `--n_trials`. However, please note that this will significantly increase the runtime.
+If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 
 ```bash
-python script/train_xgboost.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --tune --n_trials 100 --save_model --n_jobs -1
+python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
 ```
 
-SPROTify also provides an fucntion (`--run_baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
+SPROTify also provides an fucntion (`--run-baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
 This script outputs the accuracy of each machine learning method.
 Please note that these results are intended only for preliminary comparison of different algorithms, 
-have not undergone hyperparameter optimization, and the `--save_model` function will not be executed.
+have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
 
 ```bash
 # Preliminary evaluation only, no model will be built
-python script/train_lightgbm.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --run_baseline
+python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
 ```
 
 #### 2. Manual mode
@@ -195,24 +195,24 @@ All the functionalities available in **auto mode** can also be executed in **man
 Users only need to provide the separate training and test dataset files and set the `--mode` to `manual`.
 
 ```bash
-python script/train_lightgbm.py --mode manual \
-  --train_fasta TRAIN_FASTA_PATH --train_label_csv TRAIN_LABEL_PATH \
-  --test_fasta TEST_FASTA_PATH --test_label_csv TEST_LABEL_PATH
+python scripts/train_lightgbm.py --mode manual \
+  --train-fasta TRAIN_FASTA_PATH --train-label-csv TRAIN_LABEL_PATH \
+  --test-fasta TEST_FASTA_PATH --test-label-csv TEST_LABEL_PATH
 ```
 
 **Required argument**
-- `--train_fasta`: Path to the training FASTA file
-- `--train_label_csv`: Path to the training label CSV file
-- `--test_fasta`: Path to the testing FASTA file
-- `--test_label_csv`: Path to the testing label CSV
+- `--train-fasta`: Path to the training FASTA file
+- `--train-label-csv`: Path to the training label CSV file
+- `--test-fasta`: Path to the testing FASTA file
+- `--test-label-csv`: Path to the testing label CSV
 - `--mode`: Dataset assignment methods (options: `auto` (default), `manual`).
 
 **Additional arguments**
 - `--tune`: Enable hyperparameter optimization using Optuna
-- `--n_trials`: Number of Optuna optimization trials (default: 300; only used when `--tune` is enabled)
-- `--run_baseline`: Run baseline model comparison using LazyPredict
-- `--save_model`: Save the trained model for later prediction
-- `--n_jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
+- `--n-trials`: Number of Optuna optimization trials (default: 300; only used when `--tune` is enabled)
+- `--run-baseline`: Run baseline model comparison using LazyPredict
+- `--save-model`: Save the trained model for later prediction
+- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 
 **Example**
 
@@ -220,44 +220,44 @@ Using default lightgbm model to train the data. The example files used below are
 
 ```bash
 # Train and save lightgbm model
-python script/train_lightgbm.py --mode manual \
-  --train_fasta dataset/train.fasta --train_label_csv dataset/train_true_labels.csv \
-  --test_fasta dataset/test.fasta --test_label_csv dataset/test_true_labels.csv \
-  --save_model
+python scripts/train_lightgbm.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --save-model
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
-python script/train_xgboost.py --mode manual \
-  --train_fasta dataset/train.fasta --train_label_csv dataset/train_true_labels.csv \
-  --test_fasta dataset/test.fasta --test_label_csv dataset/test_true_labels.csv \
-  --save_model
+python scripts/train_xgboost.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --save-model
 
 # Using adaboost model
-python script/train_adaboost.py --mode manual \
-  --train_fasta dataset/train.fasta --train_label_csv dataset/train_true_labels.csv \
-  --test_fasta dataset/test.fasta --test_label_csv dataset/test_true_labels.csv \
-  --save_model
+python scripts/train_adaboost.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --save-model
 ```
 
-If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n_jobs` and `--n_trials`. However, please note that this will significantly increase the runtime.
+If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 
 ```bash
-python script/train_xgboost.py --mode manual \
-  --train_fasta dataset/train.fasta --train_label_csv dataset/train_true_labels.csv \
-  --test_fasta dataset/test.fasta --test_label_csv dataset/test_true_labels.csv \
-  --tune --n_trials 100 --save_model --n_jobs -1
+python scripts/train_xgboost.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --tune --n-trials 100 --save-model --n-jobs -1
 ```
 
 Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by [LazyPredict](https://github.com/shankarpandala/lazypredict). Please note that these results are intended only for preliminary comparison of different algorithms, 
-have not undergone hyperparameter optimization, and the `--save_model` function will not be executed.
+have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
 
 ```bash
 # Preliminary evaluation only, no model will be built
-python script/train_lightgbm.py --mode manual \
-  --train_fasta dataset/train.fasta --train_label_csv dataset/train_true_labels.csv \
-  --test_fasta dataset/test.fasta --test_label_csv dataset/test_true_labels.csv \
-  --run_baseline
+python scripts/train_lightgbm.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --run-baseline
 ```
