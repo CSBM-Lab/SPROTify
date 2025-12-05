@@ -17,6 +17,7 @@ SPROTify includes two main modules:
 ## Installation
 
 1. Download SPROTify and install required Python packages (Python 3.9+)
+
 ```bash
 # clone the repository
 git clone https://github.com/CSBM-Lab/SPROTify.git
@@ -27,11 +28,13 @@ pip install -r requirements.txt
 ```
 
 2. Install s4pred
+
 ```bash
 git clone https://github.com/psipred/s4pred.git
 ```
 
 3. SPROTify requires a modified version of s4pred. After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
+
 ```bash
 cp tools/run_model.py s4pred/
 ```
@@ -138,10 +141,15 @@ python script/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL
 - `--run_baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning
 - `--save_model`: Save the trained model for later prediction
 - `--n_jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
+- `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
 
 **Example**
 
-Using default lightgbm model to train the data. The example files used below are stored in the **dataset** directory.
+Using default lightgbm model to train the data. 
+The following example demonstrates how to build the model with SPROTify randomly splitting the input dataset, 
+corresponding to the `--mode auto` setting. 
+Since `--mode` defaults to `auto`, the `--mode auto` is omitted in the commands below.
+The example files used below are stored in the **dataset** directory.
 
 ```bash
 python script/train_lightgbm.py --input dataset/full_dataset.fasta --label_csv dataset/full_true_labels.csv --save_model
@@ -181,7 +189,10 @@ python script/train_lightgbm.py --input dataset/full_dataset.fasta --label_csv d
 
 #### 2. Manual mode
 
-Train and build models based on user-defined training and test sets. Training and model building can also be done in a single step. All the functionalities available in **auto mode** can also be executed in **manual mode**. Users only need to provide the separate training and test dataset files and set the `--mode` to `manual`.
+Train and build models based on user-defined training and test sets. 
+Training and model building can also be done in a single step. 
+All the functionalities available in **auto mode** can also be executed in **manual mode**. 
+Users only need to provide the separate training and test dataset files and set the `--mode` to `manual`.
 
 ```bash
 python script/train_lightgbm.py --mode manual \
@@ -194,7 +205,7 @@ python script/train_lightgbm.py --mode manual \
 - `--train_label_csv`: Path to the training label CSV file
 - `--test_fasta`: Path to the testing FASTA file
 - `--test_label_csv`: Path to the testing label CSV
-- `--mode`: Set to `manual` if pre-split training and test sets are used.
+- `--mode`: Dataset assignment methods (options: `auto` (default), `manual`).
 
 **Additional arguments**
 - `--tune`: Enable hyperparameter optimization using Optuna
