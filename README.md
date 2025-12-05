@@ -1,14 +1,17 @@
-<div style="display: flex; align-items: center; gap: 20px;">
-    <!-- 圖片部分 -->
-    <img src="images/logo_mod.png" alt="SPROTify" title="SPROTify" style="width: 150px; height: auto;">
-
-    <div>
-        # SPROTify
-        SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information. Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression. However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
+<div align="center">
+<table rules="none">
+<tr>
+<td>
+<p>SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information. Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression. However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
         SPROTify is trained on a curated dataset of experimentally validated small proteins, with multiple algorithms assessed through 5-fold cross-validation and further optimized via hyperparameter tuning.
         The tool integrates five classification models—LGBMClassifier, BaggingClassifier, XGBClassifier, ExtraTreesClassifier, and SVC—allowing users to select the most suitable model based on their analytical goals.
-        By enabling accurate identification of small proteins, SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
-    </div>
+        By enabling accurate identification of small proteins, SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.</p>
+</td>
+<td>
+<img src="images/logo_mod.png" style="zoom:50%"  alt="SPROTify"/>
+</td>
+</tr>
+</table>    
 </div>
 
 SPROTify includes two main modules:
