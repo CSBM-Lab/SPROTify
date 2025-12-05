@@ -1,4 +1,4 @@
-![SPROTify](images/logo_mod.png "SPROTify" =600x)
+![SPROTify](images/logo_mod.png =600x)
 
 # SPROTify
 
