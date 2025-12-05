@@ -1,5 +1,5 @@
 <div align="center">
-<img src="images/logo_mod.png" style="zoom:70%"  />
+<img src="images/logo_mod.png" style="zoom:30%" />
 </div>
 
 # SPROTify
