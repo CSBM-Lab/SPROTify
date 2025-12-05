@@ -1,20 +1,21 @@
-<div style="display: flex; align-items: center;">
-  <!-- 圖片 -->
-  <img src="images/logo_mod.png" alt="SPROTify" width="200" style="margin-right: 15px;"/>
-
-  <!-- 文字說明 -->
-  <p>
-    SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information. 
-Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression. 
-However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
-SPROTify is trained on a curated dataset of experimentally validated small proteins, 
-with multiple algorithms assessed through 5-fold cross-validation and further optimized via hyperparameter tuning.
-The tool integrates five classification models—LGBMClassifier, BaggingClassifier, XGBClassifier, 
-ExtraTreesClassifier, and SVC—allowing users to select the most suitable model based on their analytical goals.
-By enabling accurate identification of small proteins, 
-SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
-  </p>
-</div>
+<table>
+<tr>
+  <td>
+    <img src="images/logo_mod.png" alt="SPROTify" width="200"/>
+  </td>
+  <td>
+    SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information.
+    Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression.
+    However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
+    SPROTify is trained on a curated dataset of experimentally validated small proteins,
+    with multiple algorithms assessed through 5-fold cross-validation and further optimized via hyperparameter tuning.
+    The tool integrates five classification models—LGBMClassifier, BaggingClassifier, XGBClassifier,
+    ExtraTreesClassifier, and SVC—allowing users to select the most suitable model based on their analytical goals.
+    By enabling accurate identification of small proteins,
+    SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
+  </td>
+</tr>
+</table>
 
 SPROTify includes two main modules:
 
