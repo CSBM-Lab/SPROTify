@@ -185,7 +185,6 @@ python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv d
 SPROTify also provides an fucntion (`--run-baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
 This command will generate txt files containing the accuracy of each machine learning method.
 The output will be saved to `results_baseline/all_model_evaluation.txt`.
-
 Please note that these results are intended only for preliminary comparison of different algorithms, 
 have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
 
@@ -260,7 +259,6 @@ python scripts/train_xgboost.py --mode manual \
 ```
 
 Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by [LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode. 
-
 Please note that these results are intended only for preliminary comparison of different algorithms, 
 have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
 
