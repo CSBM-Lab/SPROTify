@@ -104,7 +104,7 @@ if __name__ == '__main__':
     parser.add_argument('--model-path', type=str, default='', metavar='FILE', help='Path to trained model file (optional; auto-select by model type if empty)')
     parser.add_argument('--input', type=str, required=True, metavar='FILE', help='Path to the input FASTA file')
     parser.add_argument('--output', type=str, required=True, metavar='FILE', help='Path to the output CSV file')
-    parser.add_argument("--n_jobs", type=int, default=1, metavar='NUM_CORES',
+    parser.add_argument("--n-jobs", type=int, default=1, metavar='NUM_CORES',
                     help="Number of CPU cores to use (use -1 for all cores)")
 
     args = parser.parse_args()
