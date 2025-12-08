@@ -22,7 +22,7 @@ from Bio.SeqRecord import SeqRecord
 import tempfile
 import argparse
 import importlib
-from isoelectric import ipc
+
 
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
