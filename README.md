@@ -131,12 +131,12 @@ Additionally, depending on whether the training and test sets are provided separ
 Automatically splits your data into training and test sets. Training and model building can also be done in a single step.
 
 ```bash
-python scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
+python scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
 ```
 
 **Required arguments**
 
-- `--input`: Path to the input FASTA file
+- `--fasta`: Path to the input FASTA file
 - `--label-csv`: Path to the label CSV file with columns `id` and `label`
 
 **Additional arguments**
@@ -158,30 +158,30 @@ Since `--mode` defaults to `auto`, the `--mode auto` is omitted in the commands 
 The example files used below are stored in the **dataset** directory.
 
 ```bash
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
-python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
+python scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
 
 # Using adaboost model
-python scripts/train_adaboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+python scripts/train_adaboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 By default, 80% of the dataset is used for training and 20% for testing. Users can modify this ratio using the `--test-ratio`.
 
 ```bash
 # Custom training/test set split (90/10)
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
 ```
 
 If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 When `--tune` is used, the script will output txt files containing the evaluation metrics of the tuned model and the best hyperparameters found.
 
 ```bash
-python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
+python scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
 ```
 
 For the above command, the following files will be generated.
@@ -196,7 +196,7 @@ have not undergone hyperparameter optimization, and the `--save-model` function 
 
 ```bash
 # Preliminary evaluation only, no model will be built
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
 ```
 
 #### 2. Manual mode
