@@ -32,10 +32,9 @@ pip3 install -r requirements.txt
 If s4pred did not be installed before, please install it via the commands as the follows,
 
 ```bash
-git clone https://github.com/psipred/s4pred.git tools
-cd tools/s4pred
-wget http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.gz
-tar -xvzf weights.tar.gz
+git clone https://github.com/psipred/s4pred.git tools/s4pred
+wget tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.gz
+tar -xvzf tools/s4pred/weights.tar.gz
 ```
 
 If users have their own installation of s4pred, please ensure that the **weights** folder exists in the s4pred directory.
@@ -43,7 +42,7 @@ If users have their own installation of s4pred, please ensure that the **weights
 3. SPROTify requires a modified version of s4pred. After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
 
 ```bash
-cp tools/run_model.py s4pred/
+cp tools/run_model.py tools/s4pred/
 ```
 
 ## Input file
