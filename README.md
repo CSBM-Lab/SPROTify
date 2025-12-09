@@ -29,7 +29,8 @@ pip3 install -r requirements.txt
 
 2. Install s4pred
 
-If s4pred did not be installed before, please install it via the commands as the follows,
+
+- If s4pred did not be installed before, please install it via the commands as the follows,
 
 ```bash
 git clone https://github.com/psipred/s4pred.git tools/s4pred
@@ -37,7 +38,8 @@ wget tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.g
 tar -xvzf tools/s4pred/weights.tar.gz
 ```
 
-If users have their own installation of s4pred, please ensure that the **weights** folder exists in the s4pred directory.
+- If users have their own installation of s4pred, please ensure that the **weights** folder exists in the s4pred directory. 
+Users can simply append the parameter `--s4pred_path` to the command when running it.
 
 3. SPROTify requires a modified version of s4pred. After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
 
@@ -73,7 +75,7 @@ Users can either provide separate FASTA and CSV files for the training and test 
 This module is for the prediction based on constructed models. Execution requires only a single step.
 
 ```bash
-python scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
+python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 ```
 
 **Required arguments**
@@ -86,6 +88,7 @@ python scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 - `--model-type`: Model type (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
 - `--model-path`: Path to trained model file
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all)
+- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -94,23 +97,31 @@ If `--model-type` and `--model-path` both are assigned, only `--model-path` will
 Perform prediction using default lightgbm model. The example files used below are stored in the **dataset** directory.
 
 ```bash
-python scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
+python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
+```
+
+If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+
+```bash
+S4PRED_PATH="/path/of/your/s4pred"
+# replace the "/path/of/your/s4pred" to the path of your s4pred folder
+python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv --s4pred_path $S4PRED_PATH
 ```
 
 If users want to use other model, just need to specify `--model-type`.
 
 ```bash
 # Using xgboost model
-python scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv
+python3 scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv
 # Using adaboost model  
-python scripts/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
+python3 scripts/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
 ```
 
 SPROTify also supports multi-threaded execution; the number of threads can be specified using `--n-jobs`, where `-1` indicates that all available CPU threads will be used.
 
 ```bash
 # Use all threads for faster prediction
-python scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv --n-jobs -1
+python3 scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv --n-jobs -1
 ```
 
 ### Training and evaluation (train a model with user data)
@@ -131,7 +142,7 @@ Additionally, depending on whether the training and test sets are provided separ
 Automatically splits your data into training and test sets. Training and model building can also be done in a single step.
 
 ```bash
-python scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
+python3 scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
 ```
 
 **Required arguments**
@@ -148,6 +159,7 @@ python scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABE
 - `--save-model`: Save the trained model for later prediction
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 - `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
+- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
 
 **Example**
 
@@ -158,30 +170,38 @@ Since `--mode` defaults to `auto`, the `--mode auto` is omitted in the commands 
 The example files used below are stored in the **dataset** directory.
 
 ```bash
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+```
+
+If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+
+```bash
+S4PRED_PATH="/path/of/your/s4pred"
+# replace the "/path/of/your/s4pred" to the path of your s4pred folder
+python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model --s4pred_path $S4PRED_PATH
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
-python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
+python3 scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
 
 # Using adaboost model
-python scripts/train_adaboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+python3 scripts/train_adaboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 By default, 80% of the dataset is used for training and 20% for testing. Users can modify this ratio using the `--test-ratio`.
 
 ```bash
 # Custom training/test set split (90/10)
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
+python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
 ```
 
 If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 When `--tune` is used, the script will output txt files containing the evaluation metrics of the tuned model and the best hyperparameters found.
 
 ```bash
-python scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
+python3 scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
 ```
 
 For the above command, the following files will be generated.
@@ -196,7 +216,7 @@ have not undergone hyperparameter optimization, and the `--save-model` function 
 
 ```bash
 # Preliminary evaluation only, no model will be built
-python scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
+python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
 ```
 
 #### 2. Manual mode
@@ -207,7 +227,7 @@ All the functionalities available in **auto mode** can also be executed in **man
 Users only need to provide the separate training and test dataset files and set the `--mode` to `manual`.
 
 ```bash
-python scripts/train_lightgbm.py --mode manual \
+python3 scripts/train_lightgbm.py --mode manual \
   --train-fasta TRAIN_FASTA_PATH --train-label-csv TRAIN_LABEL_PATH \
   --test-fasta TEST_FASTA_PATH --test-label-csv TEST_LABEL_PATH
 ```
@@ -225,6 +245,7 @@ python scripts/train_lightgbm.py --mode manual \
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict)
 - `--save-model`: Save the trained model for later prediction
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
+- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
 
 **Example**
 
@@ -232,23 +253,34 @@ Using default lightgbm model to train the data. The example files used below are
 
 ```bash
 # Train and save lightgbm model
-python scripts/train_lightgbm.py --mode manual \
+python3 scripts/train_lightgbm.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --save-model
+```
+
+If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+
+```bash
+S4PRED_PATH="/path/of/your/s4pred"
+# replace the "/path/of/your/s4pred" to the path of your s4pred folder
+python3 scripts/train_lightgbm.py --mode manual \
+  --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
+  --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
+  --save-model --s4pred_path $S4PRED_PATH
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
-python scripts/train_xgboost.py --mode manual \
+python3 scripts/train_xgboost.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --save-model
 
 # Using adaboost model
-python scripts/train_adaboost.py --mode manual \
+python3 scripts/train_adaboost.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --save-model
@@ -259,7 +291,7 @@ However, please note that this will significantly increase the runtime.
 When --tune is used in Manual mode, the output files and folder structure are the same as in **auto mode**.
 
 ```bash
-python scripts/train_xgboost.py --mode manual \
+python3 scripts/train_xgboost.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --tune --n-trials 100 --save-model --n-jobs -1
@@ -273,7 +305,7 @@ the output files and folder structure are the same as in **auto mode**.
 
 ```bash
 # Preliminary evaluation only, no model will be built
-python scripts/train_lightgbm.py --mode manual \
+python3 scripts/train_lightgbm.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --run-baseline
