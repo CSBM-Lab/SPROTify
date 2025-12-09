@@ -35,7 +35,7 @@ pip3 install -r requirements.txt
 ```bash
 git clone https://github.com/psipred/s4pred.git tools/s4pred
 wget -P tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.gz
-tar -xvzf tools/s4pred/weights.tar.gz
+tar -xvzf tools/s4pred/weights.tar.gz -C tools/s4pred
 ```
 
 - If users have their own installation of [s4pred](https://github.com/psipred/s4pred),
