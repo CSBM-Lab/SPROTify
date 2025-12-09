@@ -376,17 +376,21 @@ def run_training_pipeline(
         best_params = study.best_trial.user_attrs["trained_params"]
         best_model  = study.best_trial.user_attrs["trained_model"]
 
+        model_key = f'{model_name}_optuna'
+        print(f'\nTraining {model_name} with Optuna best parameters...')
 
     else:
         print('Using fixed optimized parameters (from previous tuning).')
         best_params = default_params
 
-    # ----- Step 4: Final Model Training (using Optuna best parameters) -----
+        model_key = f'{model_name}'
+        print(f'\nTraining {model_name} with the fixed parameters...')
+
+    # ----- Step 4: Final Model Training (using optimized hyperparameters) -----
     tuned_models = {
-        f'{model_name}_optuna': model_class(**best_params)
+        model_key: model_class(**best_params)
     }
 
-    print(f'\nTraining {model_name} with Optuna best parameters...')
     tuned_df = train_and_evaluate_models(
         train_set, train_labels,
         test_set, test_labels,

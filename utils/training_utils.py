@@ -146,14 +146,26 @@ def save_results_report(results_df, sort_key='test_auc', save_path=None, model_n
     for i, res in enumerate(results_sorted, 1):
         model_class = res['model']
 
-        # Determine if model is tuned or baseline for display
-        is_tuned = 'optuna' in model_class.lower()
-        status = 'Optuna tuned' if is_tuned else 'Baseline'
-        # Determine if model is tuned or baseline for display
+        # Updated model status logic
+        if 'optuna' in model_class.lower():
+            status = 'Optuna tuned'
+        elif '' in model_class.lower():
+            status = ''
+        else:
+            status = 'Baseline'
+
+        # Build model display name
+        if status:
+            model_label = f"{model_class}  ({status})"
+        else:
+            model_label = f"{model_class}"
+
+
+        # Determine if model is tuned/fixed or baseline for display
         rank_label = f'#{i}  ' if len(results_sorted) > 1 else ''
 
         block = [
-            f"\n{rank_label}{model_class}  ({status})",
+            f"\n{rank_label}{model_label}",
             "-" * 60,
             "Train (Cross-validated)",
             f"  F1 Score     : {res['train_f1']:.4f}",
