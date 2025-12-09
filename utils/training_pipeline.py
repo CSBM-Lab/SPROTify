@@ -355,12 +355,12 @@ def run_training_pipeline(
             baseline_df, sort_key='test_auc',
             save_path=get_file_path('results_baseline')
         )
-        print('Baseline done.\n')
+        print('\nBaseline done.')
 
         if not args.tune:
             if args.save_model:
-                print("[Warning] Baseline mode does not save models. --save_model will be ignored.\n")
-            print('Baseline only mode: evaluation completed. Skipping hyperparameter tuning and final model training.')
+                print("\n[Warning] Baseline mode does not save models. --save_model will be ignored.")
+            print('\nBaseline only mode: evaluation completed. Skipping hyperparameter tuning and final model training.')
             return baseline_df
 
     # ----- Step 3: Hyperparameter Tuning (Optuna) -----
@@ -373,7 +373,7 @@ def run_training_pipeline(
             train_labels=train_labels,
             n_trials=args.n_trials
         )
-        best_params = study.best_trial.user_attrs["trained_params"]
+        
         best_model  = study.best_trial.user_attrs["trained_model"]
 
         model_key = f'{model_name}_optuna'
@@ -383,12 +383,13 @@ def run_training_pipeline(
         print('Using fixed optimized parameters (from previous tuning).')
         best_params = default_params
 
+        best_model = model_class(**best_params)
         model_key = f'{model_name}'
         print(f'\nTraining {model_name} with the fixed parameters...')
 
     # ----- Step 4: Final Model Training (using optimized hyperparameters) -----
     tuned_models = {
-        model_key: model_class(**best_params)
+        model_key: best_model
     }
 
     tuned_df = train_and_evaluate_models(
@@ -401,7 +402,7 @@ def run_training_pipeline(
         tuned_df,
         sort_key='test_auc',
         save_path=get_file_path('results_tuned'),
-        model_name=model_name
+        model_name=model_key
     )
 
     # ----- Step 5: Model Saving -----
@@ -410,12 +411,10 @@ def run_training_pipeline(
         os.makedirs(base_dir, exist_ok=True)
 
         timestamp = datetime.now().strftime('%Y%m%d_%H%M')
-        save_path = f'{base_dir}/{model_name}_{timestamp}.joblib'
+        save_path = f'{base_dir}/{model_key}_{timestamp}.joblib'
 
-        print(f"Saved model to: {save_path}")
-        model_key = list(tuned_models.keys())[0]
-        dump(tuned_models[model_key], save_path)
-        print('Model saved.')
+        dump(best_model, save_path)
+        print(f"\nSaved model to: {save_path}")
 
     print(f'\n{model_name} training complete.')
 
