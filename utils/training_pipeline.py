@@ -36,7 +36,7 @@ def parse_and_validate_args():
                         help='auto: auto split train/test | manual: use pre-split data')
     
     # Arguments for auto mode
-    parser.add_argument('--input', type=str, metavar='FILE', help='Path to the input FASTA file (used in auto mode)')
+    parser.add_argument('--fasta', type=str, metavar='FILE', help='Path to the input FASTA file (used in auto mode)')
     parser.add_argument(
         '--label-csv', type=str,
         metavar='FILE',
@@ -71,20 +71,24 @@ def parse_and_validate_args():
 
     parser.add_argument('--save-model', action='store_true',
                     help='Save the trained model (only saves tuned model if --tune is enabled)')
+
+    s4pred_path = os.path.join(project_root, 'tools/s4pred')
+    parser.add_argument('--s4pred-path', type=str, default= s4pred_path, metavar='DIR',
+                    help='Directory containing s4pred files')
     
     args = parser.parse_args()
 
     # Validate input arguments
     if args.mode == 'auto':
-        if not args.input or not args.label_csv:
-            parser.error('--mode auto requires both --input and --label-csv')
+        if not args.fasta or not args.label_csv:
+            parser.error('--mode auto requires both --fasta and --label-csv')
     elif args.mode == 'manual':
         if not all([args.train_fasta, args.train_label_csv, args.test_fasta, args.test_label_csv]):
             parser.error('--mode manual requires --train-fasta, --train-label_csv, --test-fasta, and --test-label-csv')
 
     # Verify that required files exist
     if args.mode == 'auto':
-        file_list = [args.input, args.label_csv]
+        file_list = [args.fasta, args.label_csv]
     elif args.mode == 'manual':
         file_list = [args.train_fasta, args.train_label_csv, args.test_fasta, args.test_label_csv]
 
@@ -95,6 +99,14 @@ def parse_and_validate_args():
             '[Error] Missing files:\n' +
             '\n'.join(f' - {os.path.abspath(f)}' for f in missing_files)
         )
+
+    # Validate s4pred path
+    if not os.path.isdir(args.s4pred_path):
+        sys.exit(f"[Error] s4pred-path does not exist: {os.path.abspath(args.s4pred_path)}")
+
+    weights_dir = os.path.join(args.s4pred_path, "weights")
+    if not os.path.isdir(weights_dir):
+        sys.exit(f"[Error] Missing weights/ folder inside: {os.path.abspath(args.s4pred_path)}")
 
     return args
 
@@ -112,7 +124,7 @@ def load_auto_dataset(args, overall_params, feature_encodings):
     Args:
         args (argparse.Namespace):
             Parsed command-line arguments. Required fields:
-                input (str): Input FASTA file.
+                fasta (str): Input FASTA file.
                 label_csv (str): Label CSV file.
                 test_ratio (float): Fraction of samples assigned to the test set.
         overall_params (dict):
@@ -143,10 +155,11 @@ def load_auto_dataset(args, overall_params, feature_encodings):
 
     # Build dataset from a single FASTA + label file
     id_aa_pairs, all_features_vectors, label_df = build_labeled_dataset(
-        args.input,
+        args.fasta,
         args.label_csv,
         overall_params,
-        feature_encodings
+        feature_encodings,
+        args.s4pred_path
     )
 
     # Internal train/test split
@@ -207,7 +220,8 @@ def load_manual_dataset(args, overall_params, feature_encodings):
         args.train_fasta,
         args.train_label_csv,
         overall_params,
-        feature_encodings
+        feature_encodings,
+        args.s4pred_path
     )
     train_set = pd.DataFrame(train_vec)
     train_labels = train_label_df['label'].tolist()
@@ -217,7 +231,8 @@ def load_manual_dataset(args, overall_params, feature_encodings):
         args.test_fasta,
         args.test_label_csv,
         overall_params,
-        feature_encodings
+        feature_encodings,
+        args.s4pred_path
     )
     test_set = pd.DataFrame(test_vec)
     test_labels = test_label_df['label'].tolist()
@@ -238,7 +253,7 @@ def load_datasets(args, overall_params, feature_encodings):
         args (argparse.Namespace):
             Parsed arguments containing:
                 mode (str): Either "auto" or "manual".
-                input (str, optional): Used only in auto mode.
+                fasta (str, optional): Used only in auto mode.
                 label_csv (str, optional): Used only in auto mode.
                 test_ratio (float, optional): Used only in auto mode.
                 train_fasta (str, optional): Used only in manual mode.

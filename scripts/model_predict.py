@@ -28,8 +28,7 @@ from isoelectric import ipc
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
 sys.path.insert(0, os.path.join(project_root, "utils"))
-sys.path.insert(0, os.path.join(project_root, "tools/s4pred"))
-from seq_translation import *
+
 from sequence_io import project_root, read_fasta, write_fasta, get_file_path
 from select_feature import *
 from training_pipeline import check_n_jobs
@@ -71,7 +70,7 @@ def predict_model(model, input_file, output_file, overall_params, feature_encodi
 
     # Extract features from sequences
     sequence_ids, protein_seq, feature_matrix = build_feature_matrix_from_fasta(
-        temp_fasta_path, overall_params, feature_encodings
+        temp_fasta_path, overall_params, feature_encodings, args.s4pred_path
     )
 
     # Predict using trained model
@@ -107,8 +106,12 @@ if __name__ == '__main__':
     parser.add_argument("--n-jobs", type=int, default=1, metavar='NUM_CORES',
                     help="Number of CPU cores to use (use -1 for all cores)")
 
-    args = parser.parse_args()
+    s4pred_path = os.path.join(project_root, 'tools/s4pred')
+    parser.add_argument('--s4pred-path', type=str, default= s4pred_path, metavar='DIR',
+                    help='Directory containing s4pred files')
 
+    args = parser.parse_args()
+    
     n_jobs = check_n_jobs(args.n_jobs)
 
     default_models = {
@@ -136,6 +139,13 @@ if __name__ == '__main__':
         sys.exit(f'[Error] Model not found: {os.path.abspath(args.model_path)}')
 
     os.makedirs(os.path.dirname(args.output) or '.', exist_ok=True)
+
+    if not os.path.isdir(args.s4pred_path):
+        sys.exit(f"[Error] s4pred-path does not exist: {os.path.abspath(args.s4pred_path)}")
+
+    weights_dir = os.path.join(args.s4pred_path, "weights")
+    if not os.path.isdir(weights_dir):
+        sys.exit(f"[Error] Missing weights/ folder inside: {os.path.abspath(args.s4pred_path)}")
 
     print(f'Using model file: {args.model_path}')
 

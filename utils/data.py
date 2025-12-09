@@ -74,7 +74,7 @@ def split_dataset(id_aa_pairs, all_features_vectors, label_df, test_ratio=0.2):
     return train_set, train_labels, test_set, test_labels, test_ids, test_seqs
 
 
-def build_labeled_dataset(fasta_path, label_csv, overall_params, feature_encodings):
+def build_labeled_dataset(fasta_path, label_csv, overall_params, feature_encodings, s4pred_path):
     """
     Build a labeled dataset by extracting features from a FASTA file and aligning
     them with labels from a CSV file.
@@ -116,7 +116,7 @@ def build_labeled_dataset(fasta_path, label_csv, overall_params, feature_encodin
 
     # Extract features from sequences
     id_list, protein_seqs, all_features_vectors = build_feature_matrix_from_fasta(
-        temp_fasta_path, overall_params, feature_encodings
+        temp_fasta_path, overall_params, feature_encodings, s4pred_path
     )
     id_aa_pairs = list(zip(id_list, protein_seqs))
 

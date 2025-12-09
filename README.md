@@ -142,12 +142,16 @@ Additionally, depending on whether the training and test sets are provided separ
 Automatically splits your data into training and test sets. Training and model building can also be done in a single step.
 
 ```bash
+<<<<<<< HEAD
 python3 scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
+=======
+python scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 
 **Required arguments**
 
-- `--input`: Path to the input FASTA file
+- `--fasta`: Path to the input FASTA file
 - `--label-csv`: Path to the label CSV file with columns `id` and `label`
 
 **Additional arguments**
@@ -170,6 +174,7 @@ Since `--mode` defaults to `auto`, the `--mode auto` is omitted in the commands 
 The example files used below are stored in the **dataset** directory.
 
 ```bash
+<<<<<<< HEAD
 python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
@@ -179,29 +184,47 @@ If users have previously installed s4pred manually, they may specify the s4pred 
 S4PRED_PATH="/path/of/your/s4pred"
 # replace the "/path/of/your/s4pred" to the path of your s4pred folder
 python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model --s4pred_path $S4PRED_PATH
+=======
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 
 Users can also select other models to train the data.
 
 ```bash
 # Using xgboost model
+<<<<<<< HEAD
 python3 scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
 
 # Using adaboost model
 python3 scripts/train_adaboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+=======
+python scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save_model
+
+# Using adaboost model
+python scripts/train_adaboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 By default, 80% of the dataset is used for training and 20% for testing. Users can modify this ratio using the `--test-ratio`.
 
 ```bash
 # Custom training/test set split (90/10)
+<<<<<<< HEAD
 python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
+=======
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 
 If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
 When `--tune` is used, the script will output txt files containing the evaluation metrics of the tuned model and the best hyperparameters found.
 
 ```bash
+<<<<<<< HEAD
 python3 scripts/train_xgboost.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
+=======
+python scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 
 For the above command, the following files will be generated.
@@ -216,7 +239,11 @@ have not undergone hyperparameter optimization, and the `--save-model` function 
 
 ```bash
 # Preliminary evaluation only, no model will be built
+<<<<<<< HEAD
 python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
+=======
+python scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
+>>>>>>> ea3065d3e15751666c6922a882b79588fcef064e
 ```
 
 #### 2. Manual mode

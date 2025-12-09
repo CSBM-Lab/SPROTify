@@ -27,9 +27,9 @@ import importlib
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(project_root, "utils"))
-sys.path.insert(0, os.path.join(project_root, "tools/s4pred"))
 
 from seq_translation import *
+
 
 
 def normalize_aa_category_values_by_max(aa_categories, max_category_value):
@@ -420,7 +420,6 @@ def prepare_feature_encodings():
               properties (dict): Physicochemical properties for each amino acid.
               amino_acids (str): Standard 21 amino acid letters (20 standard + U).
     """
-
     sec_values = normalize_aa_category_values_by_max(sec_categories, 3)
 
 
@@ -524,7 +523,7 @@ def compute_overall_features(sequence, amino_acids, overall_params):
     return aa_freq_vector + [iso_value, gravy_value, len_value]
 
 
-def build_feature_matrix_from_fasta(fasta_file, overall_params, feature_encodings):
+def build_feature_matrix_from_fasta(fasta_file, overall_params, feature_encodings, s4pred_path):
     """
     Reads FASTA file and converts to feature matrix.
 
@@ -542,6 +541,9 @@ def build_feature_matrix_from_fasta(fasta_file, overall_params, feature_encoding
             feature_matrix: NumPy array of shape (n_sequences, n_features).
     """
 
+    sys.path.insert(0, s4pred_path)
+
+    importlib.invalidate_caches()
     original_argv = sys.argv.copy()
     sys.argv = ["run_model.py", fasta_file, "--outfmt", "horiz"]
 
