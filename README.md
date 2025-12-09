@@ -27,10 +27,10 @@ cd SPROTify
 pip3 install -r requirements.txt
 ```
 
-2. Install s4pred
+2. Install [s4pred](https://github.com/psipred/s4pred)
 
 
-- If s4pred did not be installed before, please install it via the commands as the follows,
+- If [s4pred](https://github.com/psipred/s4pred) did not be installed before, please install it via the commands as the follows,
 
 ```bash
 git clone https://github.com/psipred/s4pred.git tools/s4pred
@@ -38,10 +38,12 @@ wget tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.tar.g
 tar -xvzf tools/s4pred/weights.tar.gz
 ```
 
-- If users have their own installation of s4pred, please ensure that the **weights** folder exists in the s4pred directory. 
+- If users have their own installation of [s4pred](https://github.com/psipred/s4pred),
+please ensure that the **weights** folder exists in the [s4pred](https://github.com/psipred/s4pred) directory. 
 Users can simply append the parameter `--s4pred_path` to the command when running it.
 
-3. SPROTify requires a modified version of s4pred. After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
+3. SPROTify requires a modified version of [s4pred](https://github.com/psipred/s4pred).
+After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
 
 ```bash
 cp tools/run_model.py tools/s4pred/
@@ -88,7 +90,7 @@ python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 - `--model-type`: Model type (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
 - `--model-path`: Path to trained model file
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all)
-- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
+- `--s4pred_path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -100,7 +102,8 @@ Perform prediction using default lightgbm model. The example files used below ar
 python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
 ```
 
-If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually,
+they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred_path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -159,7 +162,7 @@ python3 scripts/train_lightgbm.py --input INPUT_FASTA_PATH --label_csv INPUT_LAB
 - `--save-model`: Save the trained model for later prediction
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 - `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
-- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
+- `--s4pred_path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
 **Example**
 
@@ -173,7 +176,8 @@ The example files used below are stored in the **dataset** directory.
 python3 scripts/train_lightgbm.py --input dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
-If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
+they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred_path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -245,7 +249,7 @@ python3 scripts/train_lightgbm.py --mode manual \
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict)
 - `--save-model`: Save the trained model for later prediction
 - `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
-- `--s4pred_path`: the path of s4pred folder (default:`tools/s4pred`)
+- `--s4pred_path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
 **Example**
 
@@ -259,7 +263,8 @@ python3 scripts/train_lightgbm.py --mode manual \
   --save-model
 ```
 
-If users have previously installed s4pred manually, they may specify the s4pred directory path using the `--s4pred_path` parameter.
+If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
+they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred_path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
