@@ -40,7 +40,6 @@ tar -xvzf tools/s4pred/weights.tar.gz -C tools/s4pred
 
 - If users have their own installation of [s4pred](https://github.com/psipred/s4pred),
 please ensure that the **weights** folder exists in the [s4pred](https://github.com/psipred/s4pred) directory. 
-Users can simply append the parameter `--s4pred-path` to the command when running it.
 
 3. SPROTify requires a modified version of [s4pred](https://github.com/psipred/s4pred).
 After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
