@@ -88,7 +88,6 @@ python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 
 - `--model-type`: Model type (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
 - `--model-path`: Path to trained model file
-- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all)
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
@@ -117,13 +116,6 @@ If users want to use other model, just need to specify `--model-type`.
 python3 scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv
 # Using adaboost model  
 python3 scripts/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
-```
-
-SPROTify also supports multi-threaded execution; the number of threads can be specified using `--n-jobs`, where `-1` indicates that all available CPU threads will be used.
-
-```bash
-# Use all threads for faster prediction
-python3 scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta --output model_result/xgb_testing.csv --n-jobs -1
 ```
 
 ### Training and evaluation (train a model with user data)
@@ -159,7 +151,6 @@ python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LAB
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
 - `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning
 - `--save-model`: Save the trained model for later prediction
-- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 - `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
@@ -200,11 +191,11 @@ By default, 80% of the dataset is used for training and 20% for testing. Users c
 python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --test-ratio 0.1 --save-model
 ```
 
-If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. However, please note that this will significantly increase the runtime.
+If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-trials`. However, please note that this will significantly increase the runtime.
 When `--tune` is used, the script will output txt files containing the evaluation metrics of the tuned model and the best hyperparameters found.
 
 ```bash
-python3 scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model --n-jobs -1
+python3 scripts/train_xgboost.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --tune --n-trials 100 --save-model
 ```
 
 For the above command, the following files will be generated.
@@ -247,7 +238,6 @@ python3 scripts/train_lightgbm.py --mode manual \
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict)
 - `--save-model`: Save the trained model for later prediction
-- `--n-jobs`: Number of parallel jobs (default: 1, use -1 for all cores)
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
 
 **Example**
@@ -290,7 +280,7 @@ python3 scripts/train_adaboost.py --mode manual \
   --save-model
 ```
 
-If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-jobs` and `--n-trials`. 
+If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-trials`. 
 However, please note that this will significantly increase the runtime.
 When --tune is used in Manual mode, the output files and folder structure are the same as in **auto mode**.
 
@@ -298,7 +288,7 @@ When --tune is used in Manual mode, the output files and folder structure are th
 python3 scripts/train_xgboost.py --mode manual \
   --train-fasta dataset/train_set.fasta --train-label-csv dataset/train_true_labels.csv \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
-  --tune --n-trials 100 --save-model --n-jobs -1
+  --tune --n-trials 100 --save-model
 ```
 
 Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by 
