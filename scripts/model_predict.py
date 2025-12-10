@@ -122,9 +122,10 @@ if __name__ == '__main__':
         'et': get_file_path('models/extratrees_model.joblib'),
     }
 
+    user_provided_model_type = '--model-type' in sys.argv
 
     if args.model_path:
-        if args.model_type:
+        if user_provided_model_type:
             print('[Warning] Both --model-type and --model-path were provided. '
                 'Using the specified --model-path.')
     else:
