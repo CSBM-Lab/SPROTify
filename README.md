@@ -1,8 +1,10 @@
 <div align="center">
 <img src="images/logo_mod.png" width="30%" />
 </div>
-[![DOI](https://zenodo.org/badge/1105209892.svg)](https://doi.org/10.5281/zenodo.17982429)
+
 # SPROTify
+
+[![DOI](https://zenodo.org/badge/1105209892.svg)](https://doi.org/10.5281/zenodo.17982429)
 
 SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information. Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression. However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
 SPROTify is trained on a curated dataset of experimentally validated small proteins, with multiple algorithms assessed through 5-fold cross-validation and further optimized via hyperparameter tuning.
@@ -304,4 +306,5 @@ python3 scripts/train_lightgbm.py --mode manual \
   --test-fasta dataset/test_set.fasta --test-label-csv dataset/test_true_labels.csv \
   --run-baseline
 ```
+
 
