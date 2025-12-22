@@ -21,18 +21,29 @@ SPROTify includes two main modules:
 1. Download SPROTify and install required Python packages (Python 3.9+)
 
 ```bash
-# clone the repository
+# Clone the repository
 git clone https://github.com/CSBM-Lab/SPROTify.git
 cd SPROTify
+```
 
-# Install dependencies
+```bash
+# Install dependencies with pip
 pip3 install -r requirements.txt
+```
+*or*
+```bash
+# Install dependencies with conda environment
+conda env create -f env_sprotify.yaml
+conda activate sprotify
 ```
 
 2. Install [s4pred](https://github.com/psipred/s4pred)
 
+- You may use a pre-installed version of [s4pred](https://github.com/psipred/s4pred),
+please ensure the **weights** folder containing five models exists within the [s4pred](https://github.com/psipred/s4pred) directory.
+Note: Replace the `s4pred/run_model.py` with modified version from `SPROTify/tools/run_model.py` (Backup the original version.)
 
-- If [s4pred](https://github.com/psipred/s4pred) did not be installed before, please install it via the commands as the follows,
+- If [s4pred](https://github.com/psipred/s4pred) is not already installed, use the following commands to install it:
 
 ```bash
 git clone https://github.com/psipred/s4pred.git tools/s4pred
@@ -40,11 +51,8 @@ wget -P tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.ta
 tar -xvzf tools/s4pred/weights.tar.gz -C tools/s4pred
 ```
 
-- If users have their own installation of [s4pred](https://github.com/psipred/s4pred),
-please ensure that the **weights** folder exists in the [s4pred](https://github.com/psipred/s4pred) directory. 
-
 3. SPROTify requires a modified version of [s4pred](https://github.com/psipred/s4pred).
-After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
+After cloning the original repository, copy the patched files from `tools/` to overwrite the original.
 
 ```bash
 cp tools/run_model.py tools/s4pred/
@@ -52,7 +60,7 @@ cp tools/run_model.py tools/s4pred/
 
 ## Input file
 
-SPROTify accepts a FASTA file as input, which can contain either DNA or amino acid sequences.
+SPROTify supports input in FASTA format, compatible with both nucleotide (DNA) and protein (amino acid) sequences.
 
 ```text
 >seq1
@@ -70,7 +78,7 @@ seq2,negative
 ```
 
 The column names **id** and **label** are fixed. The **id** must correspond to the headers in the FASTA file, while the **label** is used to distinguish positive and negative samples.
-Users can either provide separate FASTA and CSV files for the training and test sets, or supply a single FASTA and CSV file, in which case SPROTify will randomly split the data into training and test sets.
+Users may provide separate FASTA and CSV files for training and testing; alternatively, they can provide a single set of files, which SPROTify will randomly split into training and testing sets.
 
 ## SPROTify's commands
 
@@ -102,8 +110,8 @@ Perform prediction using default lightgbm model. The example files used below ar
 python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually,
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2.Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -168,8 +176,8 @@ The example files used below are stored in the **dataset** directory.
 python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2.Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -254,8 +262,8 @@ python3 scripts/train_lightgbm.py --mode manual \
   --save-model
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2.Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
