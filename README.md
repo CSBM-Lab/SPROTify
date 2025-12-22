@@ -24,8 +24,7 @@ SPROTify includes two main modules:
 # Clone the repository
 git clone https://github.com/CSBM-Lab/SPROTify.git
 cd SPROTify
-```
- 
+``` 
 ```bash
 # Install dependencies with pip
 pip3 install -r requirements.txt
@@ -41,7 +40,8 @@ conda activate sprotify
 
 - You may use a pre-installed version of [s4pred](https://github.com/psipred/s4pred),
 please ensure the **weights** folder containing five models exists within the [s4pred](https://github.com/psipred/s4pred) directory.
-Note: Replace the `s4pred/run_model.py` with modified version from `SPROTify/tools/run_model.py` (Backup the original version.)
+
+  **Note**: Replace the `s4pred/run_model.py` with modified version from `SPROTify/tools/run_model.py` (Backup the original version if needed.)
 
 - If [s4pred](https://github.com/psipred/s4pred) is not already installed, use the following commands to install it:
 
@@ -52,7 +52,7 @@ tar -xvzf tools/s4pred/weights.tar.gz -C tools/s4pred
 ```
 
 3. SPROTify requires a modified version of [s4pred](https://github.com/psipred/s4pred).
-After cloning the original repository, copy the patched files from `tools/` to overwrite the original.
+After cloning the original repository, copy the patched file from `tools/` to overwrite the original.
 
 ```bash
 cp tools/run_model.py tools/s4pred/
@@ -77,7 +77,8 @@ seq1,positive
 seq2,negative
 ```
 
-The column names **id** and **label** are fixed. The **id** must correspond to the headers in the FASTA file, while the **label** is used to distinguish positive and negative samples.
+The CSV file must include two columns **id** and **label**. The **id** must correspond to the headers in the FASTA file, while the **label** is used to distinguish positive and negative samples.
+
 Users may provide separate FASTA and CSV files for training and testing; alternatively, they can provide a single set of files, which SPROTify will randomly split into training and test sets.
 
 ## SPROTify's commands
@@ -98,7 +99,7 @@ python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 
 - `--model-type`: Model type. (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
 - `--model-path`: Path to trained model file.
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default:`tools/s4pred`)
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -111,7 +112,7 @@ python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_r
 ```
 
 If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
-please check the above `2.Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
+please check the above `2. Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -162,7 +163,7 @@ python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LAB
 - `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning.
 - `--save-model`: Save the trained model for later prediction.
 - `--mode`: Dataset assignment methods. (options: `auto`(default), `manual`)
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default:`tools/s4pred`)
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
 
@@ -177,7 +178,7 @@ python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv
 ```
 
 If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
-please check the above `2.Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
+please check the above `2. Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -215,6 +216,7 @@ For the above command, the following files will be generated.
 SPROTify also provides an fucntion (`--run-baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
 This command will generate txt files containing the accuracy of each machine learning method.
 The output will be saved to `results_baseline/all_model_evaluation.txt`.
+
 Please note that these results are intended for a preliminary comparison of algorithms and reflect performance without hyperparameter optimization, thus the `--save-model` function will not be executed.
 
 ```bash
@@ -247,7 +249,7 @@ python3 scripts/train_lightgbm.py --mode manual \
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict).
 - `--save-model`: Save the trained model for later prediction.
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default:`tools/s4pred`)
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
 
@@ -301,7 +303,8 @@ python3 scripts/train_xgboost.py --mode manual \
 ```
 
 Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by 
-[LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode. 
+[LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode.
+
 Please note that these results are intended for a preliminary comparison of algorithms and reflect performance without hyperparameter optimization, thus the `--save-model` function will not be executed.
 The output files and folder structure are the same as in **auto mode**.
 
