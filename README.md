@@ -21,18 +21,29 @@ SPROTify includes two main modules:
 1. Download SPROTify and install required Python packages (Python 3.9+)
 
 ```bash
-# clone the repository
+# Clone the repository
 git clone https://github.com/CSBM-Lab/SPROTify.git
 cd SPROTify
-
-# Install dependencies
+``` 
+```bash
+# Install dependencies with pip
 pip3 install -r requirements.txt
+```
+*or*
+```bash
+# Install dependencies with conda environment (for Windows)
+conda env create -f env_sprotify.yaml
+conda activate sprotify
 ```
 
 2. Install [s4pred](https://github.com/psipred/s4pred)
 
+- You may use a pre-installed version of [s4pred](https://github.com/psipred/s4pred),
+please ensure the **weights** folder containing five models exists within the [s4pred](https://github.com/psipred/s4pred) directory.
 
-- If [s4pred](https://github.com/psipred/s4pred) did not be installed before, please install it via the commands as the follows,
+  **Note**: Replace the `s4pred/run_model.py` with modified version from `SPROTify/tools/run_model.py` (Backup the original version if needed.)
+
+- If [s4pred](https://github.com/psipred/s4pred) is not already installed, use the following commands to install it:
 
 ```bash
 git clone https://github.com/psipred/s4pred.git tools/s4pred
@@ -40,11 +51,8 @@ wget -P tools/s4pred http://bioinfadmin.cs.ucl.ac.uk/downloads/s4pred/weights.ta
 tar -xvzf tools/s4pred/weights.tar.gz -C tools/s4pred
 ```
 
-- If users have their own installation of [s4pred](https://github.com/psipred/s4pred),
-please ensure that the **weights** folder exists in the [s4pred](https://github.com/psipred/s4pred) directory. 
-
 3. SPROTify requires a modified version of [s4pred](https://github.com/psipred/s4pred).
-After cloning the original repository, copy the patched files from `tools/` to overwrite the originals.
+After cloning the original repository, copy the patched file from `tools/` to overwrite the original.
 
 ```bash
 cp tools/run_model.py tools/s4pred/
@@ -52,7 +60,7 @@ cp tools/run_model.py tools/s4pred/
 
 ## Input file
 
-SPROTify accepts a FASTA file as input, which can contain either DNA or amino acid sequences.
+SPROTify supports input in FASTA format, compatible with both nucleotide (DNA) and protein (amino acid) sequences.
 
 ```text
 >seq1
@@ -69,8 +77,9 @@ seq1,positive
 seq2,negative
 ```
 
-The column names **id** and **label** are fixed. The **id** must correspond to the headers in the FASTA file, while the **label** is used to distinguish positive and negative samples.
-Users can either provide separate FASTA and CSV files for the training and test sets, or supply a single FASTA and CSV file, in which case SPROTify will randomly split the data into training and test sets.
+The CSV file must include two columns **id** and **label**. The **id** must correspond to the headers in the FASTA file, while the **label** is used to distinguish positive and negative samples.
+
+Users may provide separate FASTA and CSV files for training and testing; alternatively, they can provide a single set of files, which SPROTify will randomly split into training and test sets.
 
 ## SPROTify's commands
 
@@ -83,14 +92,14 @@ python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 
 **Required arguments**
 
-- `--input`: Path to the input FASTA file 
+- `--input`: Path to the input FASTA file.
 - `--output`: Path to the output file. If the output folder does not exist, it will be created automatically.
 
 **Additional arguments**
 
-- `--model-type`: Model type (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
-- `--model-path`: Path to trained model file
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
+- `--model-type`: Model type. (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
+- `--model-path`: Path to trained model file.
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -102,8 +111,8 @@ Perform prediction using default lightgbm model. The example files used below ar
 python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually,
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2. Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -111,7 +120,7 @@ S4PRED_PATH="/path/of/your/s4pred"
 python3 scripts/model_predict.py --input dataset/test_set.fasta --output model_result/lgbm_testing.csv --s4pred-path $S4PRED_PATH
 ```
 
-If users want to use other model, just need to specify `--model-type`.
+Users can select an alternative model by using the `--model-type` flag.
 
 ```bash
 # Using xgboost model
@@ -122,11 +131,11 @@ python3 scripts/model_predict.py --model-type ada --input dataset/test_set.fasta
 
 ### Training and evaluation (train a model with user data)
 
-If users wish to customize their own prediction models with their own datasets, this module can be used.
+This module enables users to train custom prediction models using their own datasets.
 
 Depending on the machine learning algorithm selected, SPROTify provides different scripts for users. The paths to each program are listed below:
 
-- `scripts/train_lightgbm.py` (recommended, fastest and also precise)
+- `scripts/train_lightgbm.py` (Recommended, fastest and high-precision)
 - `scripts/train_xgboost.py`
 - `scripts/train_adaboost.py`
 - `scripts/train_randomforest.py`
@@ -135,7 +144,7 @@ Depending on the machine learning algorithm selected, SPROTify provides differen
 Additionally, depending on whether the training and test sets are provided separately or a single dataset is supplied for SPROTify to randomly split, two modes (**auto mode** and **manual mode**) are available.
 
 #### 1. Auto mode (default)
-Automatically splits your data into training and test sets. Training and model building can also be done in a single step.
+Automatically splits your data into training and test sets. Training and model building can be executed in a single, streamlined step.
 
 ```bash
 python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LABEL_PATH 
@@ -143,18 +152,18 @@ python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LAB
 
 **Required arguments**
 
-- `--fasta`: Path to the input FASTA file
-- `--label-csv`: Path to the label CSV file with columns `id` and `label`
+- `--fasta`: Path to the input FASTA file.
+- `--label-csv`: Path to the label CSV file with columns `id` and `label`.
 
 **Additional arguments**
 
-- `--test-ratio`: Proportion of data for testing (default: 0.2)
-- `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna)
-- `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
-- `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning
-- `--save-model`: Save the trained model for later prediction
-- `--mode`: Dataset assignment methods (options: `auto` (default), `manual`)
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
+- `--test-ratio`: Proportion of data for testing. (default: 0.2)
+- `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
+- `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
+- `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning.
+- `--save-model`: Save the trained model for later prediction.
+- `--mode`: Dataset assignment methods. (options: `auto`(default), `manual`)
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
 
@@ -168,8 +177,8 @@ The example files used below are stored in the **dataset** directory.
 python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --save-model
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2. Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -207,8 +216,8 @@ For the above command, the following files will be generated.
 SPROTify also provides an fucntion (`--run-baseline`) that allows users to train and test models using all algorithms available in [LazyPredict](https://github.com/shankarpandala/lazypredict).
 This command will generate txt files containing the accuracy of each machine learning method.
 The output will be saved to `results_baseline/all_model_evaluation.txt`.
-Please note that these results are intended only for preliminary comparison of different algorithms, 
-have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
+
+Please note that these results are intended for a preliminary comparison of algorithms and reflect performance without hyperparameter optimization, thus the `--save-model` function will not be executed.
 
 ```bash
 # Preliminary evaluation only, no model will be built
@@ -218,9 +227,9 @@ python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv
 #### 2. Manual mode
 
 Train and build models based on user-defined training and test sets. 
-Training and model building can also be done in a single step. 
+Training and model building can be executed in a single, streamlined step.
 All the functionalities available in **auto mode** can also be executed in **manual mode**. 
-Users only need to provide the separate training and test dataset files and set the `--mode` to `manual`.
+Users simply need to provide separate files for the training and test datasets, and set the `--mode` to `manual`.
 
 ```bash
 python3 scripts/train_lightgbm.py --mode manual \
@@ -229,18 +238,18 @@ python3 scripts/train_lightgbm.py --mode manual \
 ```
 
 **Required argument**
-- `--train-fasta`: Path to the training FASTA file
-- `--train-label-csv`: Path to the training label CSV file
-- `--test-fasta`: Path to the testing FASTA file
-- `--test-label-csv`: Path to the testing label CSV
-- `--mode`: Dataset assignment methods (options: `auto` (default), `manual`).
+- `--train-fasta`: Path to the training FASTA file.
+- `--train-label-csv`: Path to the training label CSV file.
+- `--test-fasta`: Path to the testing FASTA file.
+- `--test-label-csv`: Path to the testing label CSV.
+- `--mode`: Dataset assignment methods. (options: `auto`(default), `manual`).
 
 **Additional arguments**
-- `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna)
-- `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials (default: 300; only used when `--tune` is enabled)
-- `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict)
-- `--save-model`: Save the trained model for later prediction
-- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder (default:`tools/s4pred`)
+- `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
+- `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
+- `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict).
+- `--save-model`: Save the trained model for later prediction.
+- `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
 
@@ -254,8 +263,8 @@ python3 scripts/train_lightgbm.py --mode manual \
   --save-model
 ```
 
-If users have previously installed [s4pred](https://github.com/psipred/s4pred) manually, 
-they may specify the [s4pred](https://github.com/psipred/s4pred) directory path using the `--s4pred-path` parameter.
+If users want to use a pre-installed [s4pred](https://github.com/psipred/s4pred), 
+please check the above `2. Install s4pred` section, and specify the [s4pred](https://github.com/psipred/s4pred) directory path with `--s4pred-path` parameter.
 
 ```bash
 S4PRED_PATH="/path/of/your/s4pred"
@@ -284,7 +293,7 @@ python3 scripts/train_adaboost.py --mode manual \
 
 If users want to perform hyperparameter tuning during model training, they can enable `--tune` and set `--n-trials`. 
 However, please note that this will significantly increase the runtime.
-When --tune is used in Manual mode, the output files and folder structure are the same as in **auto mode**.
+When `--tune` is used in Manual mode, the output files and folder structure are the same as in **auto mode**.
 
 ```bash
 python3 scripts/train_xgboost.py --mode manual \
@@ -294,10 +303,10 @@ python3 scripts/train_xgboost.py --mode manual \
 ```
 
 Same as **auto mode**, users can also perform preliminary comparison of different algorithms provided by 
-[LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode. 
-Please note that these results are intended only for preliminary comparison of different algorithms, 
-have not undergone hyperparameter optimization, and the `--save-model` function will not be executed.
-the output files and folder structure are the same as in **auto mode**.
+[LazyPredict](https://github.com/shankarpandala/lazypredict). The output files and directory structure are the same as in auto mode.
+
+Please note that these results are intended for a preliminary comparison of algorithms and reflect performance without hyperparameter optimization, thus the `--save-model` function will not be executed.
+The output files and folder structure are the same as in **auto mode**.
 
 ```bash
 # Preliminary evaluation only, no model will be built
