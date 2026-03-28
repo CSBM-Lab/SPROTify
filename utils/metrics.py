@@ -28,8 +28,17 @@ def compute_metrics(y_true, y_pred, y_prob=None):
 
     acc = accuracy_score(y_true, y_pred)
 
-    if y_prob is not None and not np.all(np.isnan(y_prob)):
-        auc = roc_auc_score(y_true, y_prob)
+    if y_prob is not None:
+
+        y_prob = np.asarray(y_prob)
+
+        if np.any(np.isnan(y_prob)) or np.any(np.isinf(y_prob)):
+            auc = np.nan
+        else:
+            try:
+                auc = roc_auc_score(y_true, y_prob)
+            except ValueError:
+                auc = np.nan
     else:
         auc = np.nan
 
