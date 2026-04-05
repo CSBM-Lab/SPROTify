@@ -13,7 +13,7 @@ By enabling accurate identification of small proteins, SPROTify supports researc
 
 SPROTify includes two main modules:
 
-- **Small protein prediction**: Predict small proteins directly from amino acid sequences. 
+- **Small protein prediction**: Predict small proteins directly from amino acid sequences, while also supporting DNA sequences as input.
 - **Model training**: Train and test models on custom datasets while evaluating and comparing performance across models.
 
 ## Installation
