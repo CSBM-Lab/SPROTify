@@ -99,13 +99,15 @@ if __name__ == '__main__':
         ),
         formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument('--model-type', type=str, choices=['xgb', 'lgbm', 'ada', 'rf', 'et'], default='lgbm', metavar='TYPE', help='Model type to use (choices: xgb, lgbm, ada, rf or et)')
+    parser.add_argument('--model-type', type=str, choices=['xgb', 'lgbm', 'ada'], default='lgbm', metavar='TYPE', help='Model type to use (choices: xgb, lgbm or ada)')
     parser.add_argument('--model-path', type=str, default='', metavar='FILE', help='Path to trained model file (optional; auto-select by model type if empty)')
     parser.add_argument('--input', type=str, required=True, metavar='FILE', help='Path to the input FASTA file')
     parser.add_argument('--output', type=str, required=True, metavar='FILE', help='Path to the output CSV file')
     parser.add_argument("--n-jobs", type=int, default=1, metavar='NUM_CORES',
                     help="Number of CPU cores to use (use -1 for all cores)")
 
+    params_path = os.path.join(project_root, 'overall_params.pkl')
+    parser.add_argument('--params-file', type=str, default=params_path, help='Path to a custom feature parameters file (.pkl)', metavar='FILE')
     s4pred_path = os.path.join(project_root, 'tools/s4pred')
     parser.add_argument('--s4pred-path', type=str, default= s4pred_path, metavar='DIR',
                     help='Directory containing s4pred files')
@@ -118,15 +120,13 @@ if __name__ == '__main__':
         'xgb': get_file_path('models/xgboost_model.joblib'),
         'lgbm': get_file_path('models/lightgbm_model.joblib'),
         'ada': get_file_path('models/adaboost_model.joblib'),
-        'rf': get_file_path('models/randomforest_model.joblib'),
-        'et': get_file_path('models/extratrees_model.joblib'),
     }
 
     user_provided_model_type = '--model-type' in sys.argv
 
     if args.model_path:
         if user_provided_model_type:
-            print('[Warning] Both --model-type and --model-path were provided. '
+            print('\n[Warning] Both --model-type and --model-path were provided. '
                 'Using the specified --model-path.')
     else:
         default_path = default_models.get(args.model_type)
@@ -134,30 +134,51 @@ if __name__ == '__main__':
 
 
     if not os.path.isfile(args.input):
-        sys.exit(f'[Error] Input file not found: {os.path.abspath(args.input)}')
+        sys.exit(f'\n[Error] Input file not found: {os.path.abspath(args.input)}')
 
     if not os.path.isfile(args.model_path):
-        sys.exit(f'[Error] Model not found: {os.path.abspath(args.model_path)}')
+        sys.exit(f'\n[Error] Model not found: {os.path.abspath(args.model_path)}')
 
     os.makedirs(os.path.dirname(args.output) or '.', exist_ok=True)
 
     if not os.path.isdir(args.s4pred_path):
-        sys.exit(f"[Error] s4pred-path does not exist: {os.path.abspath(args.s4pred_path)}")
+        sys.exit(f'\n[Error] s4pred-path does not exist: {os.path.abspath(args.s4pred_path)}')
 
     weights_dir = os.path.join(args.s4pred_path, "weights")
     if not os.path.isdir(weights_dir):
-        sys.exit(f"[Error] Missing weights/ folder inside: {os.path.abspath(args.s4pred_path)}")
+        sys.exit(f'\n[Error] Missing weights/ folder inside: {os.path.abspath(args.s4pred_path)}')
 
-    print(f'Using model file: {args.model_path}')
 
+    input_name = os.path.basename(args.input)      
+    params_name = os.path.basename(args.params_file) 
+
+    SPROTIFY_FILES = ['train_set.fasta', 'test_set.fasta', 'full_dataset.fasta']
+    SPROTIFY_PKL = 'overall_params.pkl'
+
+    if (input_name not in SPROTIFY_FILES) and (params_name == SPROTIFY_PKL):
+        print("\n[Warning] You are using 'SPROTify' parameters on 'custom' data.")
+        print("This might lead to inaccurate predictions due to feature scaling mismatch.")
+        print("Consider generating a specific .pkl for your dataset using the training script.")
+
+
+    print(f"\nStarting SPROTify Prediction...")
+    print(f"\n[Setup]")
+    print(f" - Model   : {os.path.basename(args.model_path)}")
+    print(f" - Params  : {os.path.basename(args.params_file)}")
 
 
     model = load(args.model_path)
 
-    overall_params = load(get_file_path('overall_params.pkl'))
+    overall_params = load(args.params_file)
     
     feature_encodings = prepare_feature_encodings()
     
     predict_model(model, args.input, args.output, overall_params, feature_encodings)
+
+    print(f"\nPrediction completed. Results saved to: {os.path.abspath(args.output)}")
+
+
+
+
 
 
