@@ -43,19 +43,16 @@ if __name__ == '__main__':
     
 
     default_params = {
-        'n_estimators': 508,
-        'learning_rate': 0.020874111994222226,
-        'max_depth': 9,
-        'reg_alpha': 0.668054555692508,
-        'reg_lambda': 0.07805161320175043,
-        'min_child_weight': 7,
-        'gamma': 1.8523253993611626,
-        'subsample': 0.8117152339795167,
-        'colsample_bytree': 0.8792570655370885,
-        'objective' : 'binary:logistic',
-        'eval_metric': 'logloss',
-        'random_state': 1,
-        'n_jobs': -1
+        'learning_rate': 0.11557433907439486,
+        'n_estimators': 182,
+        'colsample_bytree': 0.7737839205937262,
+        'subsample': 0.8364790566020426,
+        'max_depth': 5,
+        'min_child_weight': 5,
+        'reg_alpha': 1.3651163396618105e-05,
+        'reg_lambda': 8.82768474902687,
+        'objective': 'binary:logistic',
+        'random_state': 1
     }
 
     run_training_pipeline(

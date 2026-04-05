@@ -40,15 +40,16 @@ if __name__ == '__main__':
     
 
     default_params = {
-        'n_estimators': 870,
-        'learning_rate': 0.01954138735720925,
-        'max_depth': 6,
-        'num_leaves': 192,
-        'min_child_samples': 15,
-        'min_child_weight': 0.05620211863643883,
-        'subsample': 0.7247653405678081,
-        'subsample_freq': 1,
-        'colsample_bytree': 0.8032160595365208,
+        'objective': 'binary',
+        'learning_rate': 0.0948986295292432,
+        'n_estimators': 220,
+        'num_leaves': 16,
+        'max_depth': 7,
+        'min_child_samples': 41,
+        'colsample_bytree': 0.6374707667806355,
+        'subsample': 0.687647357184827,
+        'reg_alpha': 0.0016164194312992622,
+        'reg_lambda': 2.9894222199228095,
         'random_state': 1,
         'verbose': -1
     }

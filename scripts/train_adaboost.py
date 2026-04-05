@@ -41,18 +41,15 @@ if __name__ == '__main__':
     
 
     estimator = DecisionTreeClassifier(
-        max_depth=5, 
-        min_samples_split= 11, 
-        min_samples_leaf= 6, 
-        max_features= 'sqrt', 
-        criterion= 'entropy', 
+        max_depth=3, 
+        min_samples_leaf= 3, 
         random_state=1
     )
 
     default_params = {
         'estimator': estimator,
-        'n_estimators': 461,
-        'learning_rate': 0.04274484403814473,
+        'n_estimators': 504,
+        'learning_rate': 0.05698351962150469,
         'random_state': 1
     }
     
