@@ -169,7 +169,7 @@ python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LAB
 - `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
 - `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning.
-- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the save_models/ directory.
+- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the `save_models/` directory.
 - `--mode`: Dataset assignment methods. (options: `auto`(default), `manual`)
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
@@ -231,7 +231,7 @@ Please note that these results are intended for a preliminary comparison of algo
 # Preliminary evaluation only, no model will be built
 python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
 ```
-Additionally, a matching <name>_params.pkl file is automatically generated in the root directory upon the first run of a new dataset. This file is consistently reused for all future tasks(including tuning) to ensure that both training and prediction data are processed using the same criteria.
+Additionally, a matching `<name>_params.pkl` file is automatically generated in the root directory upon the first run of a new dataset. This file is consistently reused for all future tasks(including tuning) to ensure that both training and prediction data are processed using the same criteria.
 
 #### 2. Manual mode
 
@@ -257,7 +257,7 @@ python3 scripts/train_lightgbm.py --mode manual \
 - `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict).
-- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the save_models/ directory.
+- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the `save_models/` directory.
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
