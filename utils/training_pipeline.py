@@ -2,14 +2,15 @@ import argparse
 import os
 import sys
 import pandas as pd
-from data import build_labeled_dataset, split_dataset
-from select_feature import prepare_feature_encodings
-from joblib import dump, load
+from data import build_labeled_dataset, split_dataset, get_or_create_feature_params
+from select_feature import prepare_feature_encodings, build_feature_matrix_from_fasta, clean_and_normalize_sequences, convert_to_fasta_str, save_temp_fasta
+from joblib import dump
 from sequence_io import get_file_path, project_root
 from datetime import datetime
 from training_utils import train_and_evaluate_models, save_results_report
 from tuning import run_optuna
 from multiprocessing import cpu_count
+
 
 
 def parse_and_validate_args():
@@ -136,11 +137,11 @@ def load_auto_dataset(args, overall_params, feature_encodings):
     Returns:
         tuple: A tuple containing:
             train_set (np.ndarray): 
-                Training feature matrix with shape (n_train, n_features).
+                Training feature matrix with shape (n_samples, n_features).
             train_labels (np.ndarray): 
                 Training labels.
             test_set (np.ndarray): 
-                Testing feature matrix with shape (n_test, n_features).
+                Testing feature matrix with shape (n_samples, n_features).
             test_labels (np.ndarray): 
                 Testing labels.
             test_ids (list[str]): 
@@ -198,11 +199,11 @@ def load_manual_dataset(args, overall_params, feature_encodings):
     Returns:
         tuple: A tuple containing:
             train_set (pd.DataFrame): 
-                Training feature matrix with shape (n_train, n_features).
+                Training feature matrix with shape (n_samples, n_features).
             train_labels (list[int]): 
                 Training labels.
             test_set (pd.DataFrame): 
-                Testing feature matrix with shape (n_test, n_features).
+                Testing feature matrix with shape (n_samples, n_features).
             test_labels (list[int]): 
                 Testing labels.
             test_ids (list[str]): 
@@ -271,7 +272,7 @@ def load_datasets(args, overall_params, feature_encodings):
         tuple: A tuple containing:
             load_manual_dataset(), containing:
                 train_set (np.ndarray or pd.DataFrame):
-                    Training feature matrix with shape (n_train, n_features).
+                    Training feature matrix with shape (n_samples, n_features).
                     - np.ndarray in 'auto' mode
                     - pd.DataFrame in 'manual' mode
                 train_labels (np.ndarray or list[int]):
@@ -279,7 +280,7 @@ def load_datasets(args, overall_params, feature_encodings):
                     - np.ndarray in 'auto' mode 
                     - list[int] in 'manual' mode
                 test_set (np.ndarray or pd.DataFrame): 
-                    Testing feature matrix with shape (n_test, n_features).
+                    Testing feature matrix with shape (n_samples, n_features).
                     - np.ndarray in 'auto' mode
                     - pd.DataFrame in 'manual' mode
                 test_labels (np.ndarray or list[int]): 
@@ -302,57 +303,58 @@ def load_datasets(args, overall_params, feature_encodings):
         raise ValueError(f'Unknown mode: {args.mode}. Expected "auto" or "manual".')
 
 
-
-
 def run_training_pipeline(
     args,
     model_class,                   
     default_params=None  
 ):
     """
-    Runs the full training pipeline including feature preparation, baseline
-    evaluation, hyperparameter tuning, model training, and model saving.
+    Executes the SPROTify training workflow from raw sequences to a production-ready model.
 
-    Steps:
-    1. Feature generation
-    2. Baseline model evaluation (optional)
-    3. Optuna hyperparameter tuning (optional)
-    4. Model training using best parameters
-    5. Model saving (optional)
+    Core & Optional Components:
+        - Feature generation and setting up scaling rules (Min-Max values)
+        - Baseline model evaluation (optional)
+        - Optuna hyperparameter tuning (optional)
+        - Model training using best parameters
+        - Model saving (optional)
 
     Args:
         args (Namespace): 
             Command-line arguments controlling the pipeline behavior
             (e.g., whether to tune, run baseline, save model).
-        model_class (class): 
-            The model class used to create the classifier instance
-            (e.g., LGBMClassifier, XGBClassifier).
+        model_class (type): 
+            The model class to be used (e.g., LGBMClassifier). 
+            Pass the class name itself, not a created model.
         default_params (dict, optional): Pre-defined optimized parameters to use
             when tuning is disabled.
 
     Returns:
-        pandas.DataFrame: Evaluation results for the trained model.
+        pandas.DataFrame: A DataFrame containing evaluation metrics (e.g., ACC, AUC) 
+            for either the baseline models or the final optimized model.
     """
 
     model_name = model_class.__name__
 
-    # ----- Step 1: Feature Generation -----
-    overall_params = load(get_file_path('overall_params.pkl'))
+    # ----- Feature Generation -----
     feature_encodings = prepare_feature_encodings()
 
+    # Feature scaling (Min-Max values)
+    overall_params, params_path = get_or_create_feature_params(args, feature_encodings)
+    
     train_set, train_labels, test_set, test_labels, test_ids, test_seqs = \
         load_datasets(args, overall_params, feature_encodings)
 
-    # ----- Step 2: Baseline Evaluation (LazyPredict) -----
+
+    # ----- Baseline Evaluation (LazyPredict) -----
     if args.run_baseline:
         print('\nRunning baseline models...')
-        baseline_df = train_and_evaluate_models(
+        baseline_df, _ = train_and_evaluate_models(
             train_set, train_labels,
             test_set, test_labels,
             tuned_models={}, run_baseline=True
         )
         save_results_report(
-            baseline_df, sort_key='test_auc',
+            baseline_df, sort_key='train_auc',
             save_path=get_file_path('results_baseline')
         )
         print('\nBaseline done.')
@@ -363,7 +365,7 @@ def run_training_pipeline(
             print('\nBaseline only mode: evaluation completed. Skipping hyperparameter tuning and final model training.')
             return baseline_df
 
-    # ----- Step 3: Hyperparameter Tuning (Optuna) -----
+    # ----- Hyperparameter Tuning (Optuna) -----
     if args.tune:
 
         print(f'\nRunning Optuna tuning ({args.n_trials} trials)...')
@@ -387,12 +389,12 @@ def run_training_pipeline(
         model_key = f'{model_name}'
         print(f'\nTraining {model_name} with the fixed parameters...')
 
-    # ----- Step 4: Final Model Training (using optimized hyperparameters) -----
+    # ----- Final Model Training (using optimized hyperparameters) -----
     tuned_models = {
         model_key: best_model
     }
 
-    tuned_df = train_and_evaluate_models(
+    tuned_df, final_trained_models = train_and_evaluate_models(
         train_set, train_labels,
         test_set, test_labels,
         tuned_models, run_baseline=False
@@ -400,12 +402,12 @@ def run_training_pipeline(
 
     save_results_report(
         tuned_df,
-        sort_key='test_auc',
+        sort_key=None,  # No sorting needed for a single model
         save_path=get_file_path('results_tuned'),
         model_name=model_key
     )
 
-    # ----- Step 5: Model Saving -----
+    # ----- Model Saving -----
     if args.save_model:
         base_dir = os.path.join(project_root, 'save_models')
         os.makedirs(base_dir, exist_ok=True)
@@ -413,7 +415,8 @@ def run_training_pipeline(
         timestamp = datetime.now().strftime('%Y%m%d_%H%M')
         save_path = f'{base_dir}/{model_key}_{timestamp}.joblib'
 
-        dump(best_model, save_path)
+        final_model = final_trained_models[model_key]
+        dump(final_model, save_path)
         print(f"\nSaved model to: {save_path}")
 
     print(f'\n{model_name} training complete.')
