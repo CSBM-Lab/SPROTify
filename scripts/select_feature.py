@@ -9,7 +9,7 @@ from joblib import load
 import numpy as np
 import peptides
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, roc_auc_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold
 import xgboost as xgb
 import lightgbm as lgb
 import pandas as pd
@@ -553,40 +553,54 @@ def build_feature_matrix_from_fasta(fasta_file, overall_params, feature_encoding
     sys.argv = original_argv
     sequences = list(SeqIO.parse(fasta_file, 'fasta'))
 
+    if not overall_params:
+        all_iso = []
+        all_gravy = []
+        all_lens = []
+
+        for seq_record in sequences:
+        
+            seq = str(seq_record.seq).replace('X', '')
+            all_iso.append(ipc.predict_isoelectric_point(seq))
+            all_gravy.append(peptides.Peptide(seq).hydrophobicity(scale="KyteDoolittle"))
+            all_lens.append(len(seq))
+
+
+        overall_params["iso_max"] = max(all_iso)
+        overall_params["gravy_min"] = min(all_gravy)
+        overall_params["gravy_max"] = max(all_gravy)
+        overall_params["len_max"] = max(all_lens)
+
+
     # S4Pred secondary structure prediction
     fasta_data = loadfasta(fasta_file)
     conf_scores, sec_structs, aa_sequence = predict_s4pred_structure(fasta_data)
 
-    sec_values = feature_encodings['sec_values']
-    properties = feature_encodings['properties']
     amino_acids = feature_encodings['amino_acids']
-
     id_list, protein_seqs = [], []
     aa_features, overall_features = [], []
 
     for seq_record, conf, pred, aa in zip(sequences, conf_scores, sec_structs, aa_sequence):
         seq_id = seq_record.id
-        sequence = str(aa)
+        sequence = str(aa) 
 
+        
         # Secondary structure scores
-        sec_score_list = [sec_values.get(p, 0) for p in pred]
-
+        sec_struct_values = [feature_encodings['sec_values'].get(p, 0) for p in pred]
+        
         # Amino acid features
-        aa_feat_vector = encode_sequence(sequence, sec_score_list, properties)
-        aa_features.append(aa_feat_vector)
+        aa_feat_vector = encode_sequence(sequence, sec_struct_values, feature_encodings['properties'])
 
         # Overall sequence features
         overall_feat_vector = compute_overall_features(sequence, amino_acids, overall_params)
-        overall_features.append(overall_feat_vector)
 
         id_list.append(seq_id)
         protein_seqs.append(sequence)
-
-    aa_features = np.array(aa_features)
-    overall_features = np.array(overall_features)
-
+        aa_features.append(aa_feat_vector)
+        overall_features.append(overall_feat_vector)
+        
     # Concatenate amino acid and overall features to form feature matrix
-    all_features_vectors = np.concatenate((aa_features, overall_features), axis=1)
+    all_features_vectors = np.concatenate((np.array(aa_features), np.array(overall_features)), axis=1)
 
     return id_list, protein_seqs, all_features_vectors
 
@@ -629,6 +643,9 @@ def clean_and_normalize_sequences(sequences):
         warn_msgs = []
 
         if is_dna(seq):
+
+            seq = seq.upper()
+            
             # Check if DNA length is divisible by 3
             if len(seq) % 3 != 0:
                 warn_msgs.append(f"[WARNING] {record.id} - DNA sequence length is not divisible by 3, translation may be inaccurate.")
