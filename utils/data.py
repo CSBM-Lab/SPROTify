@@ -1,7 +1,10 @@
 import pandas as pd
+import os
 from select_feature import build_feature_matrix_from_fasta, prepare_feature_encodings, clean_and_normalize_sequences, convert_to_fasta_str, save_temp_fasta
 from sklearn.model_selection import train_test_split
 from Bio import SeqIO
+from sequence_io import project_root
+from joblib import dump, load
 
 
 def split_dataset(id_aa_pairs, all_features_vectors, label_df, test_ratio=0.2):
@@ -25,11 +28,11 @@ def split_dataset(id_aa_pairs, all_features_vectors, label_df, test_ratio=0.2):
     Returns:
         tuple: A 6-element tuple containing:
             train_set (np.ndarray):
-                Training feature matrix with shape (n_train, n_features).
+                Training feature matrix with shape (n_samples, n_features).
             train_labels (np.ndarray): 
                 Training labels.
             test_set (np.ndarray): 
-                Testing feature matrix with shape (n_test, n_features).
+                Testing feature matrix with shape (n_samples, n_features).
             test_labels (np.ndarray): 
                 Testing labels.
             test_ids (list[str]): 
@@ -54,6 +57,8 @@ def split_dataset(id_aa_pairs, all_features_vectors, label_df, test_ratio=0.2):
 
     # Merge features with labels (inner join excludes unlabeled samples)
     df = feature_df.merge(label_df, on="id", how="inner")
+
+    df["label"] = df["label"].astype(int)
 
     # Stratified split to maintain class ratio
     train_df, test_df = train_test_split(
@@ -144,17 +149,80 @@ def build_labeled_dataset(fasta_path, label_csv, overall_params, feature_encodin
 
         print(f'\n[Info] Automatically took the intersection — {len(common_ids)} entries retained.\n')
 
-        # Filter data to keep only common IDs
-        id_list = [seq_id for seq_id in id_list if seq_id in common_ids]
-        id_aa_pairs = [(seq_id, seq) for seq_id, seq in id_aa_pairs if seq_id in common_ids]
+        # Identify valid indices where sequences exist in both FASTA and label files
+        valid_indices = [i for i, (sid, _) in enumerate(id_aa_pairs) if sid in common_ids]
+    
+        id_aa_pairs = [id_aa_pairs[i] for i in valid_indices]
+        all_features_vectors = [all_features_vectors[i] for i in valid_indices]
         
-        all_features_vectors = [
-            vec for (seq_id, _), vec in zip(id_aa_pairs, all_features_vectors) 
-            if seq_id in common_ids
-        ]
-        
+        # Keep only IDs with corresponding sequences and reset the index
         label_df = label_df[label_df['id'].isin(common_ids)].reset_index(drop=True)
 
+        label_df['label'] = label_df['label'].astype(int)
 
     return id_aa_pairs, all_features_vectors, label_df
 
+
+def get_or_create_feature_params(args, feature_encodings):
+    """
+    Manages unified feature standards (Max/Min) for protein sequences.
+    
+    Ensures consistent feature scaling by performing a global scan of:
+    - Amino acid composition 
+    - Physicochemical properties (pi, hydrophobicity)
+    - Sequence length
+    
+    Returns:
+        overall_params (dict): Dictionary of global feature benchmarks.
+        params_path (str): Storage path for the .pkl parameter file.
+    """
+    SPROTIFY_FILES = ['train_set.fasta', 'test_set.fasta', 'full_dataset.fasta']
+    
+    if args.mode == 'manual':
+        input_file = args.train_fasta
+        base_name = os.path.basename(input_file).split('.')[0]
+        param_name = f"{base_name}_with_test_combined"
+    else:
+        input_file = args.fasta
+        param_name = os.path.basename(input_file).split('.')[0]
+
+    current_filename = os.path.basename(input_file)
+    
+    # Use pre-saved scaling values for SPROTify dataset
+    if current_filename in SPROTIFY_FILES:
+        params_path = os.path.join(project_root, 'overall_params.pkl')
+    else:
+        # Generating user-specific parameter configuration
+        params_path = os.path.join(project_root, f'{param_name}_params.pkl')
+
+    # Check for existing parameter files (.pkl)
+    if os.path.exists(params_path):
+        overall_params = load(params_path)
+        return overall_params, params_path
+    
+    # Re-calculate if missing
+    print(f"\n[Init] Feature parameters not found. Calculating global Max/Min for sequence features...")
+    overall_params = {}
+    
+    if args.mode == 'manual':
+        scaling_list = [args.train_fasta, args.test_fasta]
+    else:
+        scaling_list = [args.fasta]
+
+    # Data fusion and preprocessing
+    combined_sequences = []
+    for s in scaling_list:
+        if s and os.path.exists(s):
+            combined_sequences.extend(list(SeqIO.parse(s, 'fasta')))
+    
+    padded_sequences = clean_and_normalize_sequences(combined_sequences)
+    fasta_str = convert_to_fasta_str(padded_sequences)
+    temp_fasta_path = save_temp_fasta(fasta_str)
+
+    _ = build_feature_matrix_from_fasta(temp_fasta_path, overall_params, feature_encodings, args.s4pred_path)
+
+    os.makedirs(os.path.dirname(params_path), exist_ok=True)
+    dump(overall_params, params_path)
+    print(f"Saved global feature parameters to: {params_path}")
+    
+    return overall_params, params_path
