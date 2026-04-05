@@ -1,9 +1,12 @@
 import os
+import numpy as np
 import pandas as pd
 from datetime import datetime
-from sklearn.model_selection import train_test_split, cross_val_predict
+from sklearn.base import clone
+from sklearn.model_selection import train_test_split, cross_validate, StratifiedKFold
 from lazypredict.Supervised import LazyClassifier
 from metrics import compute_metrics, get_scores
+from sklearn.metrics import recall_score, make_scorer
 
 
 def train_and_evaluate_models(train_set, train_labels, test_set, test_labels, tuned_models, run_baseline=True):
@@ -13,11 +16,11 @@ def train_and_evaluate_models(train_set, train_labels, test_set, test_labels, tu
 
     Args:
         train_set (np.ndarray or pd.DataFrame): 
-            Training feature matrix with shape (n_train, n_features).
+            Training feature matrix with shape (n_samples, n_features).
         train_labels (np.ndarray or list[int]): 
             Training labels.
         test_set (np.ndarray or pd.DataFrame): 
-            Testing feature matrix with shape (n_test, n_features).
+            Testing feature matrix with shape (n_samples, n_features).
         test_labels (np.ndarray or list[int]): 
             Testing labels.
         tuned_models (dict[str, object]): 
@@ -56,36 +59,61 @@ def train_and_evaluate_models(train_set, train_labels, test_set, test_labels, tu
 
     # Tuned models
     for name, model in tuned_models.items():
-        model.fit(X_train, y_train)
         model_dict[name] = model
 
     # Evaluation 
     evaluation_results = []
-    for model_class, model_wrapper in model_dict.items():
-        # Extract actual model if wrapped
+    final_trained_models = {} 
+
+    for model_name, model_wrapper in model_dict.items():
         model = getattr(model_wrapper, 'model', model_wrapper)
 
-        # Cross-validation on training set
-        y_pred_train = cross_val_predict(model, X_train, y_train, cv=5)
-        y_prob_train = get_scores(model, X_train, y_train, cv=5)
-        f1_train, acc_train, auc_train, sens_train, spec_train = compute_metrics(
-            y_train, y_pred_train, y_prob_train
-        )
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
+
+        specificity_scorer = make_scorer(recall_score, pos_label=0)
+
+        scoring_metrics = {
+            'auc': 'roc_auc',
+            'sensitivity': 'recall',      
+            'specificity': specificity_scorer,
+            'f1': 'f1',
+            'acc': 'accuracy'
+        }
+
+        cv_results = cross_validate(model, X_train, y_train, cv=cv, scoring=scoring_metrics)
+
+
+        f1_mean   = cv_results['test_f1'].mean()
+        acc_mean  = cv_results['test_acc'].mean()
+        auc_mean  = cv_results['test_auc'].mean()
+        sens_mean = cv_results['test_sensitivity'].mean()
+        spec_mean = cv_results['test_specificity'].mean()
+
+        
+        final_model = clone(model) 
+        final_model.fit(train_set, train_labels)
 
         # Evaluation on independent test set
-        y_pred_test = model_wrapper.predict(test_set)
-        y_prob_test = get_scores(model_wrapper, test_set)
-        f1_test, acc_test, auc_test, sens_test, spec_test = compute_metrics(
-            test_labels, y_pred_test, y_prob_test
-        )
+        y_prob_test = get_scores(final_model, test_set, model_name=model_name)
+
+        if y_prob_test is not None:
+            y_pred_test = (y_prob_test >= 0.5).astype(int)
+
+            f1_test, acc_test, auc_test, sens_test, spec_test = compute_metrics(
+                test_labels, y_pred_test, y_prob_test
+            )
+        else:
+            f1_test = acc_test = auc_test = sens_test = spec_test = np.nan
+
+        final_trained_models[model_name] = final_model
 
         evaluation_results.append({
-            'model': model_class,
-            'train_f1': f1_train,
-            'train_acc': acc_train,
-            'train_auc': auc_train,
-            'train_sens': sens_train,
-            'train_spec': spec_train,
+            'model': model_name,
+            'train_f1': f1_mean,
+            'train_acc': acc_mean,
+            'train_auc': auc_mean,
+            'train_sens': sens_mean,
+            'train_spec': spec_mean,
             'test_f1': f1_test,
             'test_acc': acc_test,
             'test_auc': auc_test,
@@ -97,11 +125,11 @@ def train_and_evaluate_models(train_set, train_labels, test_set, test_labels, tu
         print("No valid model results generated.")
         return pd.DataFrame()
 
-    return pd.DataFrame(evaluation_results)
+    return pd.DataFrame(evaluation_results), final_trained_models
 
 
 
-def save_results_report(results_df, sort_key='test_auc', save_path=None, model_name=None):
+def save_results_report(results_df, sort_key=None, save_path=None, model_name=None):
     """
     Save a formatted evaluation report of model performance to a text file.
 
@@ -114,7 +142,7 @@ def save_results_report(results_df, sort_key='test_auc', save_path=None, model_n
             Must include the metrics for training and test sets 
             (F1, Accuracy, AUC, Sensitivity, Specificity) and a 'model' column.
         sort_key (str, optional): 
-            Column name used to sort the models. Default is 'test_auc'.
+            Column name used to sort the models.
         save_path (str or None, optional): 
             Directory to save the report file.
             If None, defaults to `project_root/results_baseline`.
@@ -134,14 +162,13 @@ def save_results_report(results_df, sort_key='test_auc', save_path=None, model_n
         save_path = os.path.join(project_root, 'results_baseline')
     os.makedirs(save_path, exist_ok=True)
 
-    if sort_key not in results_df.columns:
-        print(f"sort_key '{sort_key}' not found. Available columns: {results_df.columns.tolist()}")
-        sort_key = results_df.columns[0]
 
-    # Sort results by the specified key in descending order
-    results_sorted = results_df.sort_values(by=sort_key, ascending=False).to_dict('records')
+    if sort_key and len(results_df) > 1:
+        results_df = results_df.sort_values(by=sort_key, ascending=False)
+    
 
-
+    results_sorted = results_df.to_dict('records')
+    
     output_lines = []
     for i, res in enumerate(results_sorted, 1):
         model_class = res['model']
@@ -149,7 +176,7 @@ def save_results_report(results_df, sort_key='test_auc', save_path=None, model_n
         # Updated model status logic
         if 'optuna' in model_class.lower():
             status = 'Optuna tuned'
-        elif '' in model_class.lower():
+        elif len(results_sorted) == 1:
             status = ''
         else:
             status = 'Baseline'
@@ -198,4 +225,4 @@ def save_results_report(results_df, sort_key='test_auc', save_path=None, model_n
     with open(text_file, 'w', encoding='utf-8') as f:
         f.write(output_text)
 
-    print(f"Saved evaluation results to: {text_file}")
+    print(f"\nSaved evaluation results to: {text_file}")

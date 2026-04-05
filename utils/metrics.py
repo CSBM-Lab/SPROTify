@@ -52,40 +52,34 @@ def compute_metrics(y_true, y_pred, y_prob=None):
         
     return f1, acc, auc, sensitivity, specificity
 
-def get_scores(model, X, y=None, cv=None):
+def get_scores(model, X, model_name=""):
     """
-    Get prediction scores from a model.
+    Extracts prediction scores (probabilities or decision values) from a model.
 
     Args:
         model: 
-            A fitted model or an unfitted estimator that implements
-            'predict_proba' or 'decision_function'.
-        X: 
-            Training feature matrix with shape (n_train, n_features).
-        y: 
-            Training labels. Required only when using cross-validation.
-        cv:
-            Cross-validation number of folds.
+           The trained classifier object (e.g., LGBMClassifier, XGBClassifier).
+        X (array-like): 
+            Testing feature matrix with shape (n_samples, n_features).
+        model_name (str):
+            Label for the model, used for error logging.
 
     Returns:
-        array or None: 
-            Prediction scores (higher = more likely positive class),
-            or None if the model does not support scoring methods.
+        numpy.ndarray: 
+            An array of scores (probabilities or decision values). 
+            Returns None if the model is incompatible or produces NaN.
     """
 
-    # When using cross-validation
-    if cv is not None and y is not None:
-        if hasattr(model, 'predict_proba'):
-            return cross_val_predict(model, X, y, cv=cv, method='predict_proba')[:, 1]
-        elif hasattr(model, 'decision_function'):
-            return cross_val_predict(model, X, y, cv=cv, method='decision_function')
-        else:
-            return None
-    # Without cross-validation: directly predict on the given dataset (e.g., test set)
+    if hasattr(model, "predict_proba"):
+        proba = model.predict_proba(X)[:, 1]
+    elif hasattr(model, "decision_function"):
+        proba = model.decision_function(X)
     else:
-        if hasattr(model, "predict_proba"):
-            return model.predict_proba(X)[:, 1]
-        elif hasattr(model, "decision_function"):
-            return model.decision_function(X)
-        else:
-            return None
+        print(f"[Warning] Model {model_name} does not support predict_proba.")
+        return None
+
+    if np.isnan(proba).any():
+        print(f"[Warning] {model_name} predicted NaN, skipping.")
+        return None
+
+    return proba
