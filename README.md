@@ -8,7 +8,7 @@
 
 SPROTify is a machine learning–based tool for accurate small-protein prediction using features derived from amino acid sequences and secondary structure information. Small proteins have emerged as important regulators in diverse biological processes, including signal transduction, metabolism, stress response, and disease progression. However, many remain unannotated or experimentally uncharacterized due to their short length and low abundance.
 SPROTify is trained on a curated dataset of experimentally validated small proteins, with multiple algorithms assessed through 5-fold cross-validation and further optimized via hyperparameter tuning.
-The tool integrates five classification models—LGBMClassifier, BaggingClassifier, XGBClassifier, ExtraTreesClassifier, and SVC—allowing users to select the most suitable model based on their analytical goals.
+The tool integrates three classification models—LGBMClassifier, XGBClassifier, and AdaBoostClassifier—allowing users to select the most suitable model based on their analytical goals.
 By enabling accurate identification of small proteins, SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
 
 SPROTify includes two main modules:
@@ -97,9 +97,10 @@ python3 scripts/model_predict.py --input INPUT_FASTA_PATH --output OUTPUT_PATH
 
 **Additional arguments**
 
-- `--model-type`: Model type. (options: `xgb`, `lgbm`(default), `ada`, `rf` or `et`)
+- `--model-type`: Model type. (options: `xgb`, `lgbm`(default) or `ada`)
 - `--model-path`: Path to trained model file.
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
+- `--params-file`: Path to the .pkl file storing the feature min-max values calculated from our training data. (default: `overall_params.pkl`) 
 
 If `--model-type` and `--model-path` both are assigned, only `--model-path` will take effect.
 
@@ -129,6 +130,15 @@ python3 scripts/model_predict.py --model-type xgb --input dataset/test_set.fasta
 python3 scripts/model_predict.py --model-type ada --input dataset/test_set.fasta --output model_result/ada_testing.csv
 ```
 
+Default execution uses `overall_params.pkl`. For custom models, provide the files generated during training (the model saved via --save-model and its matching auto-generated .pkl file):
+
+```bash
+MODEL_PATH="./save_models/your_model.joblib"
+PARAMS_PATH="./your_params.pkl"
+
+python3 scripts/model_predict.py --model-path $MODEL_PATH --input INPUT_FASTA_PATH --output OUTPUT_PATH --params-file $PARAMS_PATH
+```
+
 ### Training and evaluation (train a model with user data)
 
 This module enables users to train custom prediction models using their own datasets.
@@ -138,8 +148,6 @@ Depending on the machine learning algorithm selected, SPROTify provides differen
 - `scripts/train_lightgbm.py` (Recommended, fastest and high-precision)
 - `scripts/train_xgboost.py`
 - `scripts/train_adaboost.py`
-- `scripts/train_randomforest.py`
-- `scripts/train_extratrees.py`
 
 Additionally, depending on whether the training and test sets are provided separately or a single dataset is supplied for SPROTify to randomly split, two modes (**auto mode** and **manual mode**) are available.
 
@@ -161,7 +169,7 @@ python3 scripts/train_lightgbm.py --fasta INPUT_FASTA_PATH --label_csv INPUT_LAB
 - `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
 - `--run-baseline`: Perform model comparison across all methods provided by [LazyPredict](https://github.com/shankarpandala/lazypredict) without hyperparameter tuning.
-- `--save-model`: Save the trained model for later prediction.
+- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the save_models/ directory.
 - `--mode`: Dataset assignment methods. (options: `auto`(default), `manual`)
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
@@ -223,6 +231,7 @@ Please note that these results are intended for a preliminary comparison of algo
 # Preliminary evaluation only, no model will be built
 python3 scripts/train_lightgbm.py --fasta dataset/full_dataset.fasta --label-csv dataset/full_true_labels.csv --run-baseline
 ```
+Additionally, a matching <name>_params.pkl file is automatically generated in the root directory upon the first run of a new dataset. This file is consistently reused for all future tasks(including tuning) to ensure that both training and prediction data are processed using the same criteria.
 
 #### 2. Manual mode
 
@@ -248,7 +257,7 @@ python3 scripts/train_lightgbm.py --mode manual \
 - `--tune`: Enable hyperparameter optimization using [Optuna](https://github.com/optuna/optuna).
 - `--n-trials`: Number of [Optuna](https://github.com/optuna/optuna) optimization trials. (default: 300; This option is available only when `--tune` flag is enabled.)
 - `--run-baseline`: Run baseline model comparison using [LazyPredict](https://github.com/shankarpandala/lazypredict).
-- `--save-model`: Save the trained model for later prediction.
+- `--save-model`: Save the trained model for later prediction. Files will be automatically stored in the save_models/ directory.
 - `--s4pred-path`: the path of [s4pred](https://github.com/psipred/s4pred) folder. (default: `tools/s4pred`)
 
 **Example**
