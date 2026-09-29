@@ -156,10 +156,9 @@ if __name__ == '__main__':
     SPROTIFY_PKL = 'overall_params.pkl'
 
     if (input_name not in SPROTIFY_FILES) and (params_name == SPROTIFY_PKL):
-        print("\n[Warning] You are using 'SPROTify' parameters on 'custom' data.")
+        print("\n[Note] You are using 'SPROTify' parameters on data outside the built-in datasets.")
         print("This might lead to inaccurate predictions due to feature scaling mismatch.")
-        print("Consider generating a specific .pkl for your dataset using the training script.")
-
+        print("For custom models, use your own .pkl instead of the default.")
 
     print(f"\nStarting SPROTify Prediction...")
     print(f"\n[Setup]")
