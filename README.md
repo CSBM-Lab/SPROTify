@@ -11,6 +11,10 @@ SPROTify is trained on a curated dataset of experimentally validated small prote
 The tool integrates three classification models—LGBMClassifier, XGBClassifier, and AdaBoostClassifier—allowing users to select the most suitable model based on their analytical goals.
 By enabling accurate identification of small proteins, SPROTify supports research into their potential roles in disease mechanisms, regulatory pathways, and condition-specific biological functions.
 
+## Citation
+
+C.H. Yuan, P.W. Wu, I.L. Shyu, J. Lin, C.J. Chien, L.H. Hsu, H.Y. Lee and S.H. Yu, "[SPROTify: A protein-centric machine learning framework for small protein identification with validation in cancer proteomics](https://www.sciencedirect.com/science/article/pii/S1871678426001184)", New Biotechnology, 2026, *96*, pages 179-192
+
 SPROTify includes two main modules:
 
 - **Small protein prediction**: Predict small proteins directly from amino acid sequences, while also supporting DNA sequences as input.
